@@ -1,0 +1,13 @@
+name: tui
+version: 0.0.1
+
+authors:
+  - Samual Black <samuallb@hotmail.com>
+
+crystal: 0.27.2
+
+dependencies:
+  ncurses:
+    github: SamualLB/ncurses
+
+license: MIT
