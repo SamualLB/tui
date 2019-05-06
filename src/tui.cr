@@ -1,10 +1,10 @@
 require "./tui/*"
-require "./tui/backend/termbox"
+require "./tui/backend/ncurses"
 
 module TUI
   VERSION = "0.0.1"
 
-  backend = TUI::Backend::Termbox.new.start
+  backend = TUI::Backend::NCurses.new.start
   split = TUI::HorizontalSplit.new()
   l = TUI::Custom.new()
   l.proc = ->(s : TUI::Surface) do
@@ -18,6 +18,10 @@ module TUI
     s
   end
   split.left = l
+
+  r_parent = TUI::Fixed.new()
+  r_parent.size = {10, 10}
+
   r = TUI::Custom.new()
   r.proc = ->(s : TUI::Surface) do
     s.w.times do |w|
@@ -29,9 +33,9 @@ module TUI
     end
     s
   end
-  split.right = r;
+  split.right = r_parent
+  r_parent.child = r
 
-  
   err = nil
   begin
     backend.start
