@@ -10,4 +10,11 @@ dependencies:
   ncurses:
     github: SamualLB/ncurses
 
+
+development_dependencies:
+  ncurses:
+    github: SamualLB/ncurses
+  LibTermbox:
+    github: SamualLB/libtermbox
+
 license: MIT

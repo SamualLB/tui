@@ -1,10 +1,10 @@
 require "./tui/*"
-require "./tui/backend/ncurses"
+require "./tui/backend/termbox"
 
 module TUI
   VERSION = "0.0.1"
 
-  backend = TUI::Backend::NCurses.new.start
+  backend = TUI::Backend::Termbox.new.start
   split = TUI::HorizontalSplit.new()
   l = TUI::Custom.new()
   l.proc = ->(s : TUI::Surface) do
@@ -31,12 +31,19 @@ module TUI
   end
   split.right = r;
 
-  surface = TUI::Surface.new(backend.width, backend.height)
   
-  backend.start
-  split.paint(surface).print(backend)
-  sleep 5
-  backend.stop
+  err = nil
+  begin
+    backend.start
+    surface = TUI::Surface.new(backend.width, backend.height)
+    split.paint(surface).print(backend)
+    sleep 5
+  rescue ex
+    err = ex
+  ensure
+    backend.stop
+  end
+  puts err if err
 end
 
 
