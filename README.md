@@ -20,8 +20,8 @@ Console based widget toolkit for building terminal user interfaces
 require "tui"
 
 # require one of the following backends
-require "tui/backend/ncurses"
-# add more backends...
+require "tui/backend/ncurses" # requires ncurses library
+require "tui/backend/termbox" # requires lib_termbox library
 ```
 
 TODO: Write usage instructions here
