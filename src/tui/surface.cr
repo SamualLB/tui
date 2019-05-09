@@ -29,7 +29,7 @@ struct TUI::Surface
     end
   end
 
-  protected def print(backend : TUI::Backend)
+  def print(backend : TUI::Backend)
     h.times do |h|
       w.times do |w|
         v = @cells[{w, h}]?
