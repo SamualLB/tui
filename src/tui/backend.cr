@@ -12,6 +12,16 @@ abstract class TUI::Backend
   abstract def refresh : self
 
   abstract def clear : self
+
+  def paint(surface : TUI::Surface)
+    surface.h.times do |h|
+      surface.w.times do |w|
+        v = surface.@cells[{w, h}]?
+        draw(v, w, h) if v
+      end
+    end
+    refresh
+  end
 end
 
 require "./backend/*"
