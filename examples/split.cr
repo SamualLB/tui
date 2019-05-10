@@ -1,7 +1,8 @@
 require "./../src/tui/*"
 require "./../src/tui/backend/*"
 
-backend = TUI::Backend::NCurses.new
+{% for back_class in TUI::Backend.all_subclasses %}
+backend = {{back_class}}.new
 split = TUI::HorizontalSplit.new
 
 l = TUI::Custom.new
@@ -10,7 +11,7 @@ l.proc = ->(s : TUI::Surface) do
     s.h.times do |h|
       c = TUI::Cell.new
       c.char = 'L'
-      s.@cells[{w, h}] = c
+      s[{w, h}] = c
     end
   end
   s
@@ -26,7 +27,7 @@ r.proc = ->(s : TUI::Surface) do
     s.h.times do |h|
       c = TUI::Cell.new
       c.char = 'R'
-      s.@cells[{w, h}] = c
+      s[{w, h}] = c
     end
   end
   s
@@ -47,3 +48,4 @@ ensure
   backend.stop
 end
 pp err if err
+{% end %}

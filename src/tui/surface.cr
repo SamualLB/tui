@@ -6,8 +6,17 @@ struct TUI::Surface
 
   @cells = {} of {Int32, Int32} => Cell
 
+  forward_missing_to @cells
+
   def initialize(x, y)
     @size = {x, y}
+  end
+
+  def initialize(xy : {x: Int32, y: Int32})
+    @size = {xy[:x], xy[:y]}
+  end
+
+  def initialize(@size)
   end
 
   def w : Int32
@@ -23,16 +32,20 @@ struct TUI::Surface
     yield s
     s.w.times do |w|
       s.h.times do |h|
-        newval = s.@cells[{w, h}]?
-        @cells[{w+x, h+y}] = newval if newval
+        newval = s[{w, h}]?
+        self[{w+x, h+y}] = newval if newval
       end
     end
+  end
+
+  protected def sub(w, h, xy : Tuple(Int32, Int32), &block)
+    sub(w, h, xy[0], xy[1]) { |s| yield s }
   end
 
   def print(backend : TUI::Backend)
     h.times do |h|
       w.times do |w|
-        v = @cells[{w, h}]?
+        v = self[{w, h}]?
         backend.draw(v, w, h) if v
       end
     end

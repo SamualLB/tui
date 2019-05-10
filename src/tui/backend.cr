@@ -16,7 +16,7 @@ abstract class TUI::Backend
   def paint(surface : TUI::Surface)
     surface.h.times do |h|
       surface.w.times do |w|
-        v = surface.@cells[{w, h}]?
+        v = surface[{w, h}]?
         draw(v, w, h) if v
       end
     end
