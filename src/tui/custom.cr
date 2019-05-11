@@ -9,4 +9,16 @@ class TUI::Custom
     proc.call(surface)
     surface
   end
+
+  def min_size
+    {0, 0}
+  end
+
+  def size?
+    nil
+  end
+
+  def max_size
+    {Int32.max, Int32.max}
+  end
 end

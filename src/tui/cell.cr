@@ -1,5 +1,8 @@
 struct TUI::Cell
   property char = ' '
+
+  def initialize() end
+  def initialize(@char) end
   #property style = Style.new
 
   #struct Style

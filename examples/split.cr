@@ -41,11 +41,12 @@ begin
   backend.start
   surface = TUI::Surface.new(backend.width, backend.height)
   split.paint(surface).print(backend)
-  sleep 5
+  sleep 2.5
 rescue ex
   err = ex
 ensure
   backend.stop
 end
-pp err if err
+p err if err
+pp err.backtrace if err
 {% end %}

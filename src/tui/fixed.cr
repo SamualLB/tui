@@ -8,4 +8,12 @@ class TUI::Fixed
     surface.sub(size[0], size[1], (surface.w-size[0])/2, (surface.h-size[1])/2) { |s| child.paint s }
     surface
   end
+
+  def min_size
+    size
+  end
+
+  def max_size
+    size
+  end
 end
