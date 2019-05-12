@@ -20,11 +20,11 @@ class TUI::Overlay
   end
 
   def min_size() background.min_size end
-  def size?() background.size end
+  def size?() background.size? end
   def max_size() background.max_size end
 
   private def calc_coords(sur : {Int32, Int32}) : {Int32, Int32, Int32, Int32}
-    sz = foreground.min_size
+    sz = foreground.size? || foreground.min_size
     off =  case anchor
     when Anchor::TopLeft then {0, 0}
     when Anchor::Top     then {(sur[0]-sz[0])/2, 0}

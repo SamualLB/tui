@@ -34,7 +34,7 @@ require "./../src/tui/backend/*"
   end
 
   overlay.foreground = fg_parent
-  overlay.anchor = TUI::Anchor::Center
+  overlay.anchor = TUI::Anchor::Right
   fg_parent.child = fg
 
   err = nil
