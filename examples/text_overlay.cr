@@ -18,24 +18,10 @@ require "./../src/tui/backend/*"
   end
   overlay.background = bg
 
-  fg_parent = TUI::Fixed.new
-  fg_parent.size = {10, 10}
+  fg = TUI::Label.new("Dip can provide benefits!")
 
-  fg = TUI::Custom.new
-  fg.proc = -> (s : TUI::Surface) do
-    s.w.times do |w|
-      s.h.times do |h|
-        c = TUI::Cell.new
-        c.char = w > h ? w.to_s[0] : h.to_s[0]
-        s[{w, h}] = c
-      end
-    end
-    s
-  end
-
-  overlay.foreground = fg_parent
+  overlay.foreground = fg
   overlay.anchor = TUI::Anchor::Center
-  fg_parent.child = fg
 
   err = nil
   begin
