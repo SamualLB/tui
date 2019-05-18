@@ -13,6 +13,8 @@ abstract class TUI::Backend
 
   abstract def clear : self
 
+  abstract def poll : TUI::Event?
+
   def paint(surface : TUI::Surface)
     surface.h.times do |h|
       surface.w.times do |w|
@@ -23,5 +25,3 @@ abstract class TUI::Backend
     refresh
   end
 end
-
-require "./backend/*"

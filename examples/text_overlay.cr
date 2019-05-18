@@ -29,6 +29,7 @@ require "./../src/tui/backend/*"
     surface = TUI::Surface.new(backend.width, backend.height)
     overlay.paint(surface).print(backend)
     sleep 2.5
+    polled = backend.poll
   rescue ex
     err = ex
   ensure
@@ -37,5 +38,8 @@ require "./../src/tui/backend/*"
 
   p err if err
   pp err.backtrace if err
+
+  p polled
+  pp polled
 
 {% end %}
