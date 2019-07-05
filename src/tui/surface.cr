@@ -27,19 +27,30 @@ struct TUI::Surface
     size[1]
   end
 
-  protected def sub(w, h, x = 0, y = 0, &block)
+  protected def sub(w, h, offset_x = 0, offset_y = 0, &block)
     s = TUI::Surface.new(w, h)
     yield s
     s.w.times do |w|
       s.h.times do |h|
         newval = s[{w, h}]?
-        self[{w+x, h+y}] = newval if newval
+        self[{w+offset_x, h+offset_y}] = newval if newval
       end
     end
   end
 
-  protected def sub(w, h, xy : Tuple(Int32, Int32), &block)
-    sub(w, h, xy[0], xy[1]) { |s| yield s }
+  protected def sub(w, h, offset : Tuple(Int32, Int32), &block)
+    sub(w, h, offset[0], offset[1]) { |s| yield s }
+  end
+
+  protected def sub(*, offset_x : Int32, offset_y : Int32, &block)
+    new_w = w - offset_x
+    new_h = h - offset_y
+    sub(new_w, new_h, offset_x, offset_y) { |s| yield s }
+  end
+
+  protected def sub(*, offset : Tuple(Int32, Int32), &block)
+    new_w, new_h = w - offset[0], h - offset[1]
+    sub(new_w, new_h, offset[0], offset[1]) { |s| yield s }
   end
 
   def print(backend : TUI::Backend)
