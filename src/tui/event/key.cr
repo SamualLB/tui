@@ -1,3 +1,4 @@
+# TODO: Handle modifiers
 struct TUI::Event::Key < TUI::Event
   @k : TUI::Key | Char | Nil
   
