@@ -58,7 +58,7 @@ class TUI::Backend::Termbox < TUI::Backend
       TUI::Event::Resize.new({event.w, event.h})
     when LibTermbox::EventType::Mouse then
       mse = TUI::Event::Mouse.new
-      return nil unless btn = mouse_map(event.key)
+      return nil unless btn = map_mouse(event.key)
       TUI::Event::Mouse.new(btn, {event.x, event.y})
     else return nil
     end
@@ -71,6 +71,12 @@ class TUI::Backend::Termbox < TUI::Backend
     when LibTermbox::Key::ArrowDown  then TUI::Key::Down
     when LibTermbox::Key::ArrowLeft  then TUI::Key::Left
     when LibTermbox::Key::ArrowRight then TUI::Key::Right
+    when LibTermbox::Key::Home       then TUI::Key::Home
+    when LibTermbox::Key::End        then TUI::Key::End
+    when LibTermbox::Key::PageUp     then TUI::Key::PageUp
+    when LibTermbox::Key::PageDown   then TUI::Key::PageDown
+    when LibTermbox::Key::Insert     then TUI::Key::Insert
+    when LibTermbox::Key::Delete     then TUI::Key::Delete
     when nil then key.chr
     else
       STDERR.puts "Unhandled Termbox key #{key}"
@@ -79,7 +85,7 @@ class TUI::Backend::Termbox < TUI::Backend
     out_event
   end
 
-  private def mouse_map(i : UInt16) : TUI::MouseStatus?
+  private def map_mouse(i : UInt16) : TUI::MouseStatus?
     case i
     when 0xFFFF_u16-22 then TUI::MouseStatus::PrimaryClick
     when 0xFFFF_u16-23 then TUI::MouseStatus::SecondaryClick

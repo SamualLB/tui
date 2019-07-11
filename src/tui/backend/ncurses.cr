@@ -48,7 +48,6 @@ class TUI::Backend::NCurses < TUI::Backend
     when ::NCurses::Key::Resize then
       TUI::Event::Resize.new({width, height})
     else
-      #return ::TUI::Event::Key.new
       return map_key(event)
     end
   end
@@ -57,10 +56,16 @@ class TUI::Backend::NCurses < TUI::Backend
     out_event = TUI::Event::Key.new
     out_event.key = case event
     when Char then event
-    when ::NCurses::Key::Up    then TUI::Key::Up
-    when ::NCurses::Key::Down  then TUI::Key::Down
-    when ::NCurses::Key::Left  then TUI::Key::Left
-    when ::NCurses::Key::Right then TUI::Key::Right
+    when ::NCurses::Key::Up       then TUI::Key::Up
+    when ::NCurses::Key::Down     then TUI::Key::Down
+    when ::NCurses::Key::Left     then TUI::Key::Left
+    when ::NCurses::Key::Right    then TUI::Key::Right
+    when ::NCurses::Key::Home     then TUI::Key::Home
+    when ::NCurses::Key::End      then TUI::Key::End
+    when ::NCurses::Key::PageUp   then TUI::Key::PageUp
+    when ::NCurses::Key::PageDown then TUI::Key::PageDown
+    when ::NCurses::Key::Insert   then TUI::Key::Insert
+    when ::NCurses::Key::Delete   then TUI::Key::Delete
     else
       STDERR.puts "Unhandled NCurses key #{event}"
       return nil
