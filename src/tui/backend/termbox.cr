@@ -39,14 +39,21 @@ class TUI::Backend::Termbox < TUI::Backend
     self
   end
 
-  def poll
-    return nil if (type = LibTermbox.poll_event(out event)) < 1 
+  def poll(timeout : Int32 | Bool = false) : TUI::Event?
+    event = uninitialized LibTermbox::Event
+    type = case timeout
+    when Int32 then LibTermbox.peek_event(pointerof(event), timeout)
+    else # Bool
+      if timeout
+        LibTermbox.poll_event(pointerof(event))
+      else
+        LibTermbox.peek_event(pointerof(event), 0)
+      end
+    end
+    return nil if type < 1
     case LibTermbox::EventType.new(event.type)
     when LibTermbox::EventType::Key then
-      STDERR.puts "Key"
-      PrettyPrint.format(event, STDERR, 79)
-      puts
-      nil
+      map_key(event.key)
     when LibTermbox::EventType::Resize then
       TUI::Event::Resize.new({event.w, event.h})
     when LibTermbox::EventType::Mouse then
@@ -55,6 +62,21 @@ class TUI::Backend::Termbox < TUI::Backend
       TUI::Event::Mouse.new(btn, {event.x, event.y})
     else return nil
     end
+  end
+
+  private def map_key(key) : TUI::Event::Key?
+    out_event = TUI::Event::Key.new
+    out_event.key = case LibTermbox::Key.from_value?(key)
+    when LibTermbox::Key::ArrowUp    then TUI::Key::Up
+    when LibTermbox::Key::ArrowDown  then TUI::Key::Down
+    when LibTermbox::Key::ArrowLeft  then TUI::Key::Left
+    when LibTermbox::Key::ArrowRight then TUI::Key::Right
+    when nil then key.chr
+    else
+      STDERR.puts "Unhandled Termbox key #{key}"
+      return nil
+    end
+    out_event
   end
 
   private def mouse_map(i : UInt16) : TUI::MouseStatus?

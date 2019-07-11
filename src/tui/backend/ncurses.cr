@@ -39,18 +39,33 @@ class TUI::Backend::NCurses < TUI::Backend
     self
   end
 
-  def poll
-    return nil if (event = ::NCurses.get_char) == ERR
+  def poll(timeout : Int32 | Bool = false) : TUI::Event?
+    return nil unless event = ::NCurses.get_char
     case event
     when ::NCurses::Key::Mouse then
-      return nil if (::LibNCurses.getmouse(out mouse)) == ERR
+      return nil if (LibNCurses.getmouse(out mouse)) == ERR
       return map_mouse(::NCurses::MouseEvent.new(mouse))
     when ::NCurses::Key::Resize then
       TUI::Event::Resize.new({width, height})
     else
       #return ::TUI::Event::Key.new
-      nil
+      return map_key(event)
     end
+  end
+
+  private def map_key(event : ::NCurses::Key | Char) : TUI::Event::Key?
+    out_event = TUI::Event::Key.new
+    out_event.key = case event
+    when Char then event
+    when ::NCurses::Key::Up    then TUI::Key::Up
+    when ::NCurses::Key::Down  then TUI::Key::Down
+    when ::NCurses::Key::Left  then TUI::Key::Left
+    when ::NCurses::Key::Right then TUI::Key::Right
+    else
+      STDERR.puts "Unhandled NCurses key #{event}"
+      return nil
+    end
+    out_event
   end
 
   private def map_mouse(i : ::NCurses::MouseEvent) : TUI::Event::Mouse

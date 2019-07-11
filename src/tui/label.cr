@@ -5,12 +5,12 @@ class TUI::Label
 
   def initialize(@text) end
 
-  def paint(surface : TUI::Surface)
+  def paint(surface : TUI::Surface) : TUI::Surface
     text.chars.each_with_index do |ch, i|
       cell = TUI::Cell.new(ch)
       surface[{i, 0}] = cell
     end
-    self
+    surface
   end
 
   def min_size

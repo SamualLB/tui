@@ -1,4 +1,7 @@
 @[Flags]
 enum TUI::Key
-  Test
+  Up
+  Down
+  Left
+  Right
 end

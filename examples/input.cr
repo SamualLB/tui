@@ -1,34 +1,22 @@
 require "./../src/tui/*"
 require "./../src/tui/backend/*"
 
+count = 1
+
 {% for back_class in TUI::Backend.all_subclasses %}
   backend = {{back_class}}.new
   overlay = TUI::Overlay.new
 
-  bg = TUI::Custom.new
-  bg.proc = ->(s : TUI::Surface) do
-    s.w.times do |w|
-      s.h.times do |h|
-        c = TUI::Cell.new
-        c.char = 'b'
-        s[{w, h}] = c
-      end
-    end
-    s
-  end
-  overlay.background = bg
-
-  fg = TUI::Label.new("Dip can provide benefits!")
-
-  overlay.foreground = fg
-  overlay.anchor = TUI::Anchor::Center
+  text = TUI::Label.new("Running #{count}...")
 
   err = nil
   begin
     backend.start
     surface = TUI::Surface.new(backend.width, backend.height)
-    overlay.paint(surface).print(backend)
+    text.paint(surface).print(backend)
     sleep 2.5
+    polled = backend.poll true
+    polled2 = backend.poll true
   rescue ex
     err = ex
   ensure
@@ -38,4 +26,9 @@ require "./../src/tui/backend/*"
   p err if err
   pp err.backtrace if err
 
+  p polled
+  p polled2
+  puts
+
+  count += 1
 {% end %}

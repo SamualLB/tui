@@ -13,7 +13,7 @@ abstract class TUI::Backend
 
   abstract def clear : self
 
-  abstract def poll : TUI::Event?
+  abstract def poll(timeout : Int32 | Bool = false) : TUI::Event?
 
   def paint(surface : TUI::Surface)
     surface.h.times do |h|
