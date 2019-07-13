@@ -56,16 +56,30 @@ class TUI::Backend::NCurses < TUI::Backend
     out_event = TUI::Event::Key.new
     out_event.key = case event
     when Char then event
-    when ::NCurses::Key::Up       then TUI::Key::Up
-    when ::NCurses::Key::Down     then TUI::Key::Down
-    when ::NCurses::Key::Left     then TUI::Key::Left
-    when ::NCurses::Key::Right    then TUI::Key::Right
-    when ::NCurses::Key::Home     then TUI::Key::Home
-    when ::NCurses::Key::End      then TUI::Key::End
-    when ::NCurses::Key::PageUp   then TUI::Key::PageUp
-    when ::NCurses::Key::PageDown then TUI::Key::PageDown
-    when ::NCurses::Key::Insert   then TUI::Key::Insert
-    when ::NCurses::Key::Delete   then TUI::Key::Delete
+    when ::NCurses::Key::Up        then TUI::Key::Up
+    when ::NCurses::Key::Down      then TUI::Key::Down
+    when ::NCurses::Key::Left      then TUI::Key::Left
+    when ::NCurses::Key::Right     then TUI::Key::Right
+    when ::NCurses::Key::Home      then TUI::Key::Home
+    when ::NCurses::Key::End       then TUI::Key::End
+    when ::NCurses::Key::PageUp    then TUI::Key::PageUp
+    when ::NCurses::Key::PageDown  then TUI::Key::PageDown
+    when ::NCurses::Key::Insert    then TUI::Key::Insert
+    when ::NCurses::Key::Delete    then TUI::Key::Delete
+    when ::NCurses::Key::Backspace then TUI::Key::Backspace
+    when ::NCurses::Key::Enter     then TUI::Key::Enter
+    when ::NCurses::Key::F1        then TUI::Key::F1
+    when ::NCurses::Key::F2        then TUI::Key::F2
+    when ::NCurses::Key::F3        then TUI::Key::F3
+    when ::NCurses::Key::F4        then TUI::Key::F4
+    when ::NCurses::Key::F5        then TUI::Key::F5
+    when ::NCurses::Key::F6        then TUI::Key::F6
+    when ::NCurses::Key::F7        then TUI::Key::F7
+    when ::NCurses::Key::F8        then TUI::Key::F8
+    when ::NCurses::Key::F9        then TUI::Key::F9
+    when ::NCurses::Key::F10       then TUI::Key::F10
+    when ::NCurses::Key::F11       then TUI::Key::F11
+    when ::NCurses::Key::F12       then TUI::Key::F12
     else
       STDERR.puts "Unhandled NCurses key #{event}"
       return nil

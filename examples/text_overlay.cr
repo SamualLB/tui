@@ -5,17 +5,7 @@ require "./../src/tui/backend/*"
   backend = {{back_class}}.new
   overlay = TUI::Overlay.new
 
-  bg = TUI::Custom.new
-  bg.proc = ->(s : TUI::Surface) do
-    s.w.times do |w|
-      s.h.times do |h|
-        c = TUI::Cell.new
-        c.char = 'b'
-        s[{w, h}] = c
-      end
-    end
-    s
-  end
+  bg = TUI::Fill.new('◯')
   overlay.background = bg
 
   fg = TUI::Label.new("Dip can provide benefits!")
