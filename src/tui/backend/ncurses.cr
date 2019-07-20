@@ -80,6 +80,7 @@ class TUI::Backend::NCurses < TUI::Backend
     when ::NCurses::Key::F10       then TUI::Key::F10
     when ::NCurses::Key::F11       then TUI::Key::F11
     when ::NCurses::Key::F12       then TUI::Key::F12
+    when ::NCurses::Key::Esc       then TUI::Key::Escape
     else
       STDERR.puts "Unhandled NCurses key #{event}"
       return nil

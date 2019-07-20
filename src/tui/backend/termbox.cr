@@ -98,6 +98,7 @@ class TUI::Backend::Termbox < TUI::Backend
     when LibTermbox::Key::F10        then TUI::Key::F10
     when LibTermbox::Key::F11        then TUI::Key::F11
     when LibTermbox::Key::F12        then TUI::Key::F12
+    when LibTermbox::Key::Escape     then TUI::Key::Escape
     when nil then
       STDERR.puts "Nil key #{key}: #{key.chr}"
       key.chr

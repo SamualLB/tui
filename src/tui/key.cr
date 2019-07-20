@@ -24,4 +24,5 @@ enum TUI::Key
   F10
   F11
   F12
+  Escape
 end
