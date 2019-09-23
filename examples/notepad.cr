@@ -8,5 +8,3 @@ end
 app = TUI::Application.new(Notepad, TUI::Backend::Termbox)
 
 app.exec
-
-p app.@main_window.parent
