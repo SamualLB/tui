@@ -23,17 +23,19 @@ class TUI::Application
   # Main loop
   def exec
     @start_time = Time.monotonic
-    STDERR.puts "Started: #{@start_time}"
+    STDERR.puts "Started: #{start_time}"
     @backend.start
     loop do
       # poll events
       # paint
       break if @stop
       break if (Time.monotonic - start_time) >= 5.seconds
+      raise "aaaah" if (Time.monotonic - start_time) >= 2.5.seconds
     end
   rescue ex
     PrettyPrint.format(ex, STDERR, 79)
     STDERR.puts
+    sleep 2.5
   ensure
     @backend.stop
     @end_time = Time.monotonic

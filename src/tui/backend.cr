@@ -27,3 +27,5 @@ abstract class TUI::Backend
     refresh
   end
 end
+
+require "./backend/*"
