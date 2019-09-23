@@ -24,7 +24,10 @@ begin
     case inp
     when TUI::Event::Key
       break if inp.key == 'q'
-      text.text = "#{inp.key} (#{inp.time})"
+      case inp.key
+      when Char then text.text = "#{inp.key} (#{inp.key.as(Char).ord}) (#{inp.time})"
+      when TUI::Key then text.text = "#{inp.key} (#{inp.time})"
+      end
     when TUI::Event::Mouse
       text.text = "#{inp.mouse} (#{inp.position}) (#{inp.time})"
     end

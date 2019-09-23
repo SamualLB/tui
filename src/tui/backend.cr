@@ -1,4 +1,6 @@
 abstract class TUI::Backend
+  DEFAULT = NCurses
+
   abstract def start : self
 
   abstract def stop : self
