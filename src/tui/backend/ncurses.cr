@@ -4,14 +4,14 @@ class TUI::Backend::NCurses < TUI::Backend
   ERR = -1
   OK = 0
 
-  def start
+  def start : self
     ::NCurses.start
     ::NCurses.keypad true
     ::NCurses.mouse_mask(::NCurses::Mouse::AllEvents | ::NCurses::Mouse::Position)
     self
   end
 
-  def stop
+  def stop : self
     ::NCurses.end
     self
   end
@@ -29,12 +29,12 @@ class TUI::Backend::NCurses < TUI::Backend
     self
   end
 
-  def refresh
+  def refresh : self
     ::NCurses.refresh
     self
   end
 
-  def clear
+  def clear : self
     ::NCurses.clear
     self
   end
