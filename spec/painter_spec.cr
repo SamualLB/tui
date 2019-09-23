@@ -157,5 +157,18 @@ describe TUI::Painter do
       painter.w.should eq 10
       painter.h.should eq 2
     end
+
+    it "raises on negative push inputs" do
+      expect_raises(ArgumentError) { painter.push(-1, 0) }
+      expect_raises(ArgumentError) { painter.push(0, -2) }
+      expect_raises(ArgumentError) { painter.push(0, 0, -3, Int32::MAX) }
+      expect_raises(ArgumentError) { painter.push(0, 0, Int32::MAX, -4) }
+      expect_raises(ArgumentError) { painter.push(-5, -6) }
+      expect_raises(ArgumentError) { painter.push(0, 0, -7, -8) }
+      expect_raises(ArgumentError) { painter.push(-9, -1, -2, Int32::MAX) }
+      expect_raises(ArgumentError) { painter.push(-3, -4, Int32::MAX, -5) }
+      expect_raises(ArgumentError) { painter.push(-6, 0, -7, -8) }
+      expect_raises(ArgumentError) { painter.push(0, -9, -1, -2) }
+    end
   end
 end
