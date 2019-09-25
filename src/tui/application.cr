@@ -18,6 +18,7 @@ class TUI::Application
     when Class   then backend.new
     else              Backend::DEFAULT.new
     end
+    @main_window.app = self
   end
 
   # Main loop
