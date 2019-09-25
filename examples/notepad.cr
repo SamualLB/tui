@@ -12,6 +12,17 @@ class Notepad < TUI::Window
   end
 end
 
+class NotepadPopup < TUI::Window
+  def paint(painter : TUI::Painter)
+    painter[0, 1] = 'P'
+    painter[1, 1] = 'o'
+    painter[2, 1] = 'p'
+    painter[3, 1] = 'u'
+    painter[4, 1] = 'p'
+    painter[5, 0] = '!'
+  end
+end
+
 app = TUI::Application.new(Notepad, TUI::Backend::Termbox, fps: 2.5)
 
 app.exec
