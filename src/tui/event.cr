@@ -1,15 +1,15 @@
 abstract struct TUI::Event
-  @t : Time
+  @t : Time::Span
 
   def initialize
-    @t = Time.utc
+    @t = Time.monotonic
   end
 
   def time
     @t.not_nil!
   end
 
-  protected def time=(new_t : Time)
+  protected def time=(new_t : Time::Span)
     @t = new_t
   end
 end
