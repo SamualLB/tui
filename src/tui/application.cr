@@ -4,13 +4,15 @@ class TUI::Application
   @main_window : Window
 
   property stop = false
+  property fps : Int32 | Float64
 
   getter! start_time : Time::Span
   getter! end_time : Time::Span
 
   @painter : Painter?
+  @previous_draw : Time::Span
 
-  def initialize(main_window : Class | Window = Window, backend : Backend | Class | Nil = nil)
+  def initialize(main_window : Class | Window = Window, backend : Backend | Class | Nil = nil, *, @fps = 30)
     @main_window = case main_window
     when Window then main_window
     else             main_window.new
@@ -20,6 +22,7 @@ class TUI::Application
     when Class   then backend.new
     else              Backend::DEFAULT.new
     end
+    @previous_draw = 0.seconds
     @main_window.app = self
     TUI.logger.info "Application init"
   end
@@ -30,15 +33,11 @@ class TUI::Application
     TUI.logger.info "Exec started"
     @backend.start
     loop do
+      current_time = Time.monotonic
       # poll events
-
-      # TODO: Need to add a way to limit redraws
-      #
-      # frame rate / libevent
-      dispatch_draw if (Time.monotonic - start_time) <= 2.5.seconds
+      dispatch_draw if (current_time - @previous_draw) >= (1 / fps).seconds
       break if @stop
-      break if (Time.monotonic - start_time) >= 5.seconds
-      #raise "aaaah" if (Time.monotonic - start_time) >= 2.5.seconds
+      break if (current_time - start_time) >= 5.seconds
     end
   rescue ex
     TUI.logger.fatal ex
@@ -54,9 +53,12 @@ class TUI::Application
   end
 
   private def dispatch_draw
-    event = Event::Draw.new(painter)
+    event_time = Time.monotonic
+    event = Event::Draw.new(painter, @previous_draw - event_time)
+    TUI.logger.info "draw call initiated"
     raise "redraw error!" unless @main_window.handle(event)
     @backend.paint(painter)
+    @previous_draw = event_time
   end
 
   private def dispatch_resize

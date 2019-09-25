@@ -12,6 +12,6 @@ class Notepad < TUI::Window
   end
 end
 
-app = TUI::Application.new(Notepad, TUI::Backend::Termbox)
+app = TUI::Application.new(Notepad, TUI::Backend::Termbox, fps: 2.5)
 
 app.exec
