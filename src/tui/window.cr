@@ -29,7 +29,12 @@ abstract class TUI::Window
   abstract def paint(surface : Painter)
 
   def handle(event : Event::Draw) : Bool
-    paint(event.painter)
+    return false unless paint(event.painter)
+    children.each do |child|
+      event.painter.push(child.x, child.y, child.w, child.h)
+      return false unless child.handle(event)
+      event.painter.pop
+    end
     true
   end
 end
