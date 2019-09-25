@@ -17,11 +17,10 @@ abstract class TUI::Backend
 
   abstract def poll(timeout : Int32 | Bool = false) : TUI::Event?
 
-  def paint(surface : TUI::Surface)
-    surface.h.times do |h|
-      surface.w.times do |w|
-        v = surface[{w, h}]?
-        draw(v, w, h) if v
+  def paint(painter : TUI::Painter)
+    painter.h.times do |h|
+      painter.w.times do |w|
+        draw(painter[w, h], w, h)
       end
     end
     refresh

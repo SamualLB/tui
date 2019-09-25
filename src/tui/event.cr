@@ -1,5 +1,5 @@
 abstract struct TUI::Event
-  @t : Time? = nil
+  @t : Time
 
   def initialize
     @t = Time.utc
