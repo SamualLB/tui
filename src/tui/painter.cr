@@ -103,5 +103,31 @@ struct TUI::Painter
     self[i, j] = Cell.new(val)
   end
 
-  #abstract def paint(surface : TUI::Surface) : TUI::Surface
+  # Draw a string `str`
+  #
+  # Starting at point [`i`, `j`], with maximum `width`
+  def []=(i, j, width, str : String)
+    x_extra = 0
+    y_extra = 0
+    str.each_char do |c|
+      self[i+x_extra, j+y_extra] = c
+      x_extra += 1
+      if x_extra >= width
+        x_extra = 0
+        y_extra += 1
+      end
+    end
+  end
+
+  # Draw a string `str`
+  #
+  # Starting at point [`i`, `j`], up to maximum width
+  def []=(i, j, str : String)
+    self[i, j, w-i] = str
+  end
+
+
+  def print(i, j, str : String)
+    self[i, j] = str
+  end
 end
