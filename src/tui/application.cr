@@ -18,14 +18,13 @@ class TUI::Application
     TUI.logger.info "Application init"
     super(main_window, backend, fps: fps)
     main_window.app = self
-    backend.title = title if title
+    self.title = title if title
   end
 
   # Main loop
   def exec
     TUI.logger.info "Application exec started, starting backend"
     @backend.start
-    @backend.title = "Inside Test Title"
     painter # Generate
     super
   ensure
@@ -33,4 +32,6 @@ class TUI::Application
     @backend.stop
     TUI.dump_log
   end
+
+  delegate :title=, to: @backend
 end
