@@ -5,7 +5,7 @@ class TUI::Application
   include EventLoop
   @painter : Painter?
 
-  def initialize(main_window : Class | Window = Window, backend : Backend | Class | Nil = nil, *, fps = 30)
+  def initialize(main_window : Class | Window = Window, backend : Backend | Class | Nil = nil, *, fps = 30, title : String? = nil)
     main_window = case main_window
     when Window then main_window
     else             main_window.new
@@ -18,12 +18,14 @@ class TUI::Application
     TUI.logger.info "Application init"
     super(main_window, backend, fps: fps)
     main_window.app = self
+    backend.title = title if title
   end
 
   # Main loop
   def exec
     TUI.logger.info "Application exec started, starting backend"
     @backend.start
+    @backend.title = "Inside Test Title"
     painter # Generate
     super
   ensure

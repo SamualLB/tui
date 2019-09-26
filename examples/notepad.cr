@@ -17,6 +17,6 @@ class NotepadPopup < TUI::Modal
   end
 end
 
-app = TUI::Application.new(Notepad, TUI::Backend::Termbox, fps: 2.5)
+app = TUI::Application.new(Notepad, TUI::Backend::Termbox, fps: 2.5, title: "Notepad")
 
 app.exec

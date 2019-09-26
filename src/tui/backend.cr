@@ -25,6 +25,11 @@ abstract class TUI::Backend
     end
     refresh
   end
+
+  # XTerm compatible
+  def title=(str : String)
+    print("\033]2;", str, "\007")
+  end
 end
 
 require "./backend/*"
