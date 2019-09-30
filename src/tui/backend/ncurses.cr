@@ -5,14 +5,18 @@ class TUI::Backend::NCurses < TUI::Backend
   OK = 0
 
   def start : self
+    raise "TUI Backend already active, cannot start another" if @@started
     ::NCurses.start
     ::NCurses.keypad true
     ::NCurses.mouse_mask(::NCurses::Mouse::AllEvents | ::NCurses::Mouse::Position)
+    @@started = true
     self
   end
 
   def stop : self
+    raise "TUI Backend not active, cannot stop" unless @@started
     ::NCurses.end
+    @@started = false
     self
   end
 
