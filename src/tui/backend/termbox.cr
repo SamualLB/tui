@@ -2,21 +2,21 @@ require "lib_termbox"
 
 class TUI::Backend::Termbox < TUI::Backend
   def start : self
-    raise "TUI Backend already active, cannot start another" if @@started
+    raise "TUI Backend already active" if @started
     case LibTermbox.init
     when -1 then raise "Termbox error: unsupported terminal"
     when -2 then raise "Termbox error: failed to open TTY"
     when -3 then raise "Termbox error: pipe trap error"
     end
     LibTermbox.select_input_mode(LibTermbox::InputMode::Mouse)
-    @@started = true
+    @started = true
     self
   end
 
   def stop : self
-    raise "TUI Backend not active, cannot stop" unless @@started
+    raise "TUI Backend not active" unless @started
     LibTermbox.shutdown
-    @@started = false
+    @started = false
     self
   end
 

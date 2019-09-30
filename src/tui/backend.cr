@@ -1,7 +1,7 @@
 abstract class TUI::Backend
   DEFAULT = NCurses
 
-  class_getter started = false
+  getter started = false
 
   abstract def start : self
 
