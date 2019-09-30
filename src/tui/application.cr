@@ -39,11 +39,16 @@ class TUI::Application
     old_parent.parent = new_parent
     new_parent.parent = nil
     new_parent.app = self
+    @window = new_parent
     @parent_stack.push old_parent
   end
 
   def deparent
-    @window = @parent_stack.pop
+    old_parent = @window
+    new_parent = @parent_stack.pop
+    new_parent.parent = nil
+    old_parent.children.delete(new_parent)
+    @window = new_parent
   end
 
   delegate :title=, to: @backend
