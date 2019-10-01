@@ -29,11 +29,13 @@ module TUI::EventLoop
         sleep(@previous_draw + (1 / fps).seconds - Time.monotonic) unless handled
       end
       dispatch_draw
-      if self.is_a?(Application) && !@modal_shown && (Time.monotonic - start_time) >= 2.5.seconds
+      {% if env("NOTEPAD_TEST") %}
+      if self.is_a?(Application) && !@modal_drawn && (Time.monotonic - start_time) >= 2.5.seconds
         TUI.logger.info "Starting the notepad test modal"
-        @modal_shown = true
+        @modal_drawn = true
         NotepadPopup.exec(self)
       end
+      {% end %}
       break if @stop
       break if (Time.monotonic - start_time) >= 5.seconds
     end
