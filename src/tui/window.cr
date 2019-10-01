@@ -20,7 +20,7 @@ abstract class TUI::Window
   end
 
   def layout : Layout
-    @layout ||= Layout::DEFAULT.new
+    @layout ||= Layout::Horizontal.new(self)
   end
 
   def parent! : Window

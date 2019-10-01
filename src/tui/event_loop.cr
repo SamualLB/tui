@@ -35,6 +35,12 @@ module TUI::EventLoop
         @modal_drawn = true
         NotepadPopup.exec(self)
       end
+      {% elsif env("STACK_TEST") %}
+      if self.is_a?(Application) && !@modal_drawn && (Time.monotonic - start_time) >= 2.5.seconds
+        TUI.logger.info "Swapping stack"
+        @modal_drawn = true
+        @window.@layout.as(Layout::Stacked).index = 1
+      end
       {% end %}
       break if @stop
       break if (Time.monotonic - start_time) >= 5.seconds
@@ -67,7 +73,7 @@ module TUI::EventLoop
 
   # Create a draw event and disperse it to the main window
   # to go down the window tree
-  private def dispatch_draw
+  def dispatch_draw
     event_time = Time.monotonic
     painter.clear
     event = Event::Draw.new(painter, @previous_draw - event_time)
@@ -79,15 +85,17 @@ module TUI::EventLoop
 
   private def dispatch_key(event : Event::Key)
     # dispatch key event
+    TUI.logger.fatal event.inspect
     raise "unimplemented"
   end
 
   private def dispatch_mouse(event : Event::Mouse)
     # dispatch mouse event
+    TUI.logger.fatal event.inspect
     raise "unimplemented"
   end
 
-  private def dispatch_resize(event : Event::Resize? = nil)
+  def dispatch_resize(event : Event::Resize? = nil)
     event = Event::Resize.new(@backend.width, @backend.height) unless event
     TUI.logger.info "resize dispatched"
     raise "resize error!" unless @window.handle(event)
