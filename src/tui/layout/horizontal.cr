@@ -1,8 +1,11 @@
 class TUI::Layout::Horizontal < TUI::Layout
 
+  @items = [] of Window
+
   # Very basic, lays out each Window with width/no. of window as the width
   # and full height
   def set(event, w, h)
+    return if @items.empty?
     width_for_each = w // @items.size
     width_for_last = w - (width_for_each * @items.size)
     @items.each_with_index do |item, i|
