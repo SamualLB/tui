@@ -17,6 +17,12 @@ abstract class TUI::Backend
 
   abstract def clear : self
 
+  # Return an input event
+  #
+  # timeout values:
+  # false (default): no delay, immediatly return waiting event or nil
+  # true: wait indefinitely, returns the next event
+  # Int32: waits up to `timeout` milliseconds, returns an event or nil
   abstract def poll(timeout : Int32 | Bool = false) : TUI::Event?
 
   def paint(painter : TUI::Painter)

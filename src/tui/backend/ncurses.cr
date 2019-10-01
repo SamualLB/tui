@@ -44,6 +44,11 @@ class TUI::Backend::NCurses < TUI::Backend
   end
 
   def poll(timeout : Int32 | Bool = false) : TUI::Event?
+    case timeout
+    when false then ::NCurses.stdscr.timeout = 0
+    when true  then ::NCurses.no_timeout
+    when Int32 then ::NCurses.stdscr.timeout = timeout
+    end
     return nil unless event = ::NCurses.get_char
     case event
     when ::NCurses::Key::Mouse then
