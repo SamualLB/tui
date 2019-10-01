@@ -36,19 +36,19 @@ abstract class TUI::Window
   #abstract def handle(event : Event::Mouse) : Bool
 
   def handle(event : Event::Resize) : Bool
-    self.x = 0
-    self.y = 0
-    self.w = event.width
-    self.h = event.height
+    unless parent
+      self.x = 0
+      self.y = 0
+      self.w = event.width
+      self.h = event.height
+    end
+    layout.set(event, w, h)
     children.each { |child| return false unless child.handle(event) }
     true
   end
 
   abstract def paint(surface : Painter)
 
-  # Temporary implementation
-  #
-  # Needs to make use of layout
   def handle(event : Event::Draw) : Bool
     return false unless paint(event.painter)
     children.each do |child|
