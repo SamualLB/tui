@@ -13,6 +13,20 @@ class TUI::Layout::Vertical < TUI::Layout
       item.y = 0 + (height_for_each * i)
       item.w = w
       item.h = item == @items.last ? height_for_last : height_for_each
+      item.handle(event) if item.is_a?(Window)
     end
+  end
+
+  def <<(win : Window)
+    delete(win)
+    @items << win
+  end
+
+  def delete(win : Window)
+    @items.delete win
+  end
+
+  def each_window(&block)
+    @items.each { |item| yield item if item.is_a? Window }
   end
 end

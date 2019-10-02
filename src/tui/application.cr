@@ -39,6 +39,7 @@ class TUI::Application
     old_parent.parent = new_parent
     new_parent.parent = nil
     new_parent.app = self
+    new_parent << old_parent
     @window = new_parent
     @parent_stack.push old_parent
   end
@@ -47,7 +48,7 @@ class TUI::Application
     old_parent = @window
     new_parent = @parent_stack.pop
     new_parent.parent = nil
-    old_parent.children.delete(new_parent)
+    old_parent.layout.delete(new_parent)
     @window = new_parent
   end
 

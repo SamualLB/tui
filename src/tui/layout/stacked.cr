@@ -12,20 +12,26 @@ class TUI::Layout::Stacked < TUI::Layout
         win.w = w
         win.h = h
       else
-        win.w = 0
-        win.h = 0
+        win.w = w
+        win.h = h
       end
+      win.handle(event)
     end
   end
 
-  def <<(window : Window)
-    @windows << window
+  def <<(win : Window)
+    delete(win)
+    @windows << win
     @index = 0 if @windows.size == 1
   end
 
+  def delete(win : Window)
+    @windows.delete win
+  end
+
   def top? : Window?
-    return nil unless @index
-    @windows[@index]?
+    return nil unless i = @index
+    @windows[i]?
   end
 
   def top : Window
@@ -35,5 +41,9 @@ class TUI::Layout::Stacked < TUI::Layout
   def index=(new : Int32)
     @index = new
     window.app.dispatch_resize
+  end
+
+  def each_window(&block)
+    @windows.each { |win| yield win if win.is_a? Window }
   end
 end

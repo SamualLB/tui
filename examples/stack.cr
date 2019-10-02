@@ -37,8 +37,9 @@ class StackChild2 < TUI::Window
 end
 
 win = Stack.new
-win.@layout.as(TUI::Layout::Stacked) << StackChild1.new(win)
-win.@layout.as(TUI::Layout::Stacked) << StackChild2.new(win)
+StackChild1.new(win)
+StackChild2.new(win)
+
 
 app = TUI::Application.new(win, TUI::Backend::Termbox, fps: 2.5, title: "Stack Test")
 

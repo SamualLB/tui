@@ -4,15 +4,13 @@ abstract class TUI::Window
   property! x : Int32
   property! y : Int32
 
-  property children = [] of Window
-
   getter parent : Window?
 
   setter layout : Layout?
   setter app : Application?
 
   def initialize(@parent = nil)
-    parent.children << self if parent
+    parent << self if parent
   end
 
   def app : Application
@@ -29,7 +27,11 @@ abstract class TUI::Window
 
   def parent=(new_parent)
     @parent = new_parent
-    new_parent.children << self if new_parent
+    new_parent.layout << self if new_parent
+  end
+
+  def <<(win : Window)
+    layout << win
   end
 
   #abstract def handle(event : Event::Key) : Bool
@@ -43,19 +45,18 @@ abstract class TUI::Window
       self.h = event.height
     end
     layout.set(event, w, h)
-    children.each { |child| return false unless child.handle(event) }
     true
   end
 
   abstract def paint(surface : Painter)
 
   def handle(event : Event::Draw) : Bool
-    return false unless paint(event.painter)
-    children.each do |child|
+    layout.each_window do |child|
       event.painter.push(child.x, child.y, child.w, child.h)
       return false unless child.handle(event)
       event.painter.pop
     end
+    return false unless paint(event.painter)
     true
   end
 end
