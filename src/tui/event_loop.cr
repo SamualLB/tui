@@ -100,4 +100,6 @@ module TUI::EventLoop
     TUI.logger.info "resize dispatched"
     raise "resize error!" unless @window.handle(event)
   end
+
+  abstract def app : Application
 end

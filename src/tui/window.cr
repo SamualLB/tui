@@ -9,6 +9,8 @@ abstract class TUI::Window
   setter layout : Layout?
   setter app : Application?
 
+  property focused : Bool = false
+
   def initialize(@parent = nil)
     parent << self if parent
   end
@@ -58,5 +60,13 @@ abstract class TUI::Window
     end
     return false unless paint(event.painter)
     true
+  end
+
+  def set_focused(val : Bool)
+    if val
+      app.focused = self
+    else
+      app.focused = nil if app.focused == self
+    end
   end
 end

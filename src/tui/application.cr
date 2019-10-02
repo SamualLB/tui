@@ -6,6 +6,8 @@ class TUI::Application
 
   @parent_stack = [] of Window
 
+  getter focused : Window?
+
   def initialize(main_window : Class | Window = Window, backend : Backend | Class | Nil = nil, *, fps = 30, title : String? = nil)
     main_window = case main_window
     when Window then main_window
@@ -50,6 +52,19 @@ class TUI::Application
     new_parent.parent = nil
     old_parent.layout.delete(new_parent)
     @window = new_parent
+  end
+
+  def app : Application
+    self
+  end
+
+  def focused! : Window
+    @focused.not_nil!
+  end
+
+  def focused=(win : Window?)
+    focused.try &.set_focused(false)
+    @focused = win
   end
 
   delegate :title=, to: @backend
