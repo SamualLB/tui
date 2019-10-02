@@ -13,6 +13,11 @@ class Notepad < TUI::Window
     TUI.logger.info "Notepad pretended to handle key event: #{event}"
     true
   end
+
+  def handle(event : TUI::Event::Mouse) : Bool
+    TUI.logger.info "Notepad pretended to handle mouse event: #{event}"
+    true
+  end
 end
 
 class NotepadPopup < TUI::Modal
@@ -25,6 +30,6 @@ class NotepadPopup < TUI::Modal
   end
 end
 
-app = TUI::Application.new(Notepad, TUI::Backend::Termbox, fps: 2.5, title: "Notepad")
+app = TUI::Application.new(Notepad, TUI::Backend::NCurses, fps: 2.5, title: "Notepad")
 
 app.exec

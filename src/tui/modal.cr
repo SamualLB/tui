@@ -18,4 +18,8 @@ abstract class TUI::Modal < TUI::Window
   def self.exec(app)
     self.new(app).exec
   end
+
+  def block_mouse_events?
+    true
+  end
 end

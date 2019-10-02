@@ -97,9 +97,23 @@ module TUI::EventLoop
   end
 
   private def dispatch_mouse(event : Event::Mouse)
-    # dispatch mouse event
-    TUI.logger.fatal event.inspect
-    raise "unimplemented"
+    # find contaning window that is lowest down the tree, store in cur_window
+    cur_window = @window
+    loop do
+      parent_window = cur_window
+      break if cur_window.block_mouse_events?
+      cur_window.layout.each_window do |child|
+        if child.contains(event)
+          cur_window = child
+          break
+        end
+      end
+      break if parent_window == cur_window # no child contains, parent only
+    end
+    TUI.logger.info "Sending mouse event #{event} to #{cur_window}"
+    unless cur_window.handle(event)
+      TUI.logger.info "Unhandled mouse event #{event}, sent to #{cur_window}"
+    end
   end
 
   def dispatch_resize(event : Event::Resize? = nil)

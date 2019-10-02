@@ -53,12 +53,12 @@ abstract class TUI::Window
   abstract def paint(surface : Painter)
 
   def handle(event : Event::Draw) : Bool
+    return false unless paint(event.painter)
     layout.each_window do |child|
       event.painter.push(child.x, child.y, child.w, child.h)
       return false unless child.handle(event)
       event.painter.pop
     end
-    return false unless paint(event.painter)
     true
   end
 
@@ -70,10 +70,25 @@ abstract class TUI::Window
     end
   end
 
+  # TODO: Bubble up
+  # TODO: Implement key bindings and key method
   def handle(event : Event::Key) : Bool
     layout.each_window do |child|
       return true if child.handle(event)
     end
     false
+  end
+
+  # TODO: Bubble up
+  def handle(event : Event::Mouse) : Bool
+    false
+  end
+
+  def block_mouse_events? : Bool
+    false
+  end
+
+  protected def contains(event : Event::Mouse) : Bool
+    event.x >= x && event.y >= y && event.x < x+w && event.y < y+h
   end
 end
