@@ -83,10 +83,17 @@ module TUI::EventLoop
     @previous_draw = event_time
   end
 
+  # Pass to the currently focused window, which will then
+  # bubble the event up until it is consumed or reaches the
+  # top of the tree
   private def dispatch_key(event : Event::Key)
-    # dispatch key event
-    TUI.logger.fatal event.inspect
-    raise "unimplemented"
+    unless focus = app.focused
+      focus = @window
+      TUI.logger.info "No window focused for key event, using top-level #{focus}"
+    end
+    unless focus.handle(event)
+      TUI.logger.info "Unhandled key event #{event}, sent to #{focus}"
+    end
   end
 
   private def dispatch_mouse(event : Event::Mouse)

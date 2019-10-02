@@ -5,6 +5,14 @@ class Notepad < TUI::Window
     painter[0, 0] = "Notepad"
     true
   end
+
+  def handle(event : TUI::Event::Key) : Bool
+    layout.each_window do |child|
+      return true if child.handle(event)
+    end
+    TUI.logger.info "Notepad pretended to handle key event: #{event}"
+    true
+  end
 end
 
 class NotepadPopup < TUI::Modal

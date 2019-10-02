@@ -69,4 +69,11 @@ abstract class TUI::Window
       app.focused = nil if app.focused == self
     end
   end
+
+  def handle(event : Event::Key) : Bool
+    layout.each_window do |child|
+      return true if child.handle(event)
+    end
+    false
+  end
 end
