@@ -7,7 +7,7 @@ class TUI::Layout::Vertical < TUI::Layout
   def set(event, w, h)
     return if @items.empty?
     height_for_each = h // @items.size
-    height_for_last = h - (height_for_each * @items.size)
+    height_for_last = height_for_each + h - (height_for_each * @items.size)
     @items.each_with_index do |item, i|
       item.x = 0
       item.y = 0 + (height_for_each * i)

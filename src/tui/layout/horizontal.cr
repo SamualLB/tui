@@ -7,11 +7,11 @@ class TUI::Layout::Horizontal < TUI::Layout
   def set(event, w, h)
     return if @items.empty?
     width_for_each = w // @items.size
-    width_for_last = w - (width_for_each * @items.size)
+    width_for_last = width_for_each + w - (width_for_each * @items.size)
     @items.each_with_index do |item, i|
       item.x = 0 + (width_for_each * i)
       item.y = 0
-      item.w = item == @items.last && !@items.first ? width_for_last : width_for_each
+      item.w = item == @items.last ? width_for_last : width_for_each
       item.h = h
       item.handle(event) if item.is_a?(Window)
     end
