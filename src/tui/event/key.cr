@@ -1,12 +1,15 @@
 # TODO: Handle modifiers
 struct TUI::Event::Key < TUI::Event
-  @k : TUI::Key | Char | Nil
-  
-  def key
-    @k.not_nil!
+  getter! key : TUI::Key | Char
+
+  def initialize(@key)
+    super()
   end
 
-  protected def key=(new_k : TUI::Key | Char)
-    @k = new_k
+  def initialize()
+    super()
+  end
+
+  protected def key=(@key : TUI::Key | Char)
   end
 end

@@ -1,36 +1,34 @@
 struct TUI::Event::Mouse < TUI::Event
-  @m : TUI::MouseStatus? = nil
-  @p : {Int32, Int32}? = nil
+  getter! mouse : TUI::MouseStatus
+  getter! position : {Int32, Int32}
 
-  def initialize(@m, @p)
+  def initialize(@mouse, @position)
     super()
   end
 
-  def initialize(@m)
+  def initialize(@mouse)
     super()
   end
 
-  def initialize(@p)
+  def initialize(@position)
     super()
   end
 
   def initialize()
-    super
+    super()
   end
 
-  def mouse
-    @m.not_nil!
+  protected def mouse=(@mouse : TUI::MouseStatus)
   end
 
-  protected def mouse=(new_m : TUI::MouseStatus)
-    @m = new_m
+  protected def position=(@position : {Int32, Int32})
   end
 
-  def position
-    @p.not_nil!
+  def x : Int32
+    position[0]
   end
 
-  protected def position=(new_p : {Int32, Int32})
-    @p = new_p
+  def y : Int32
+    position[1]
   end
 end
