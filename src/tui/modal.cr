@@ -3,8 +3,7 @@ require "./window"
 abstract class TUI::Modal < TUI::Window
   include EventLoop
 
-  def initialize(@app)
-    super(self, app.@backend, fps: app.fps)
+  def initialize(@app : Application)
   end
 
   def exec
@@ -15,7 +14,7 @@ abstract class TUI::Modal < TUI::Window
     app.deparent
   end
 
-  def self.exec(app)
+  def self.exec(app : Application)
     self.new(app).exec
   end
 

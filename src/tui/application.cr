@@ -4,23 +4,27 @@ require "./event_loop"
 class TUI::Application
   include EventLoop
 
+  property fps : Int32 | Float64
+  getter previous_draw : Time::Span
   @parent_stack = [] of Window
+  @backend : Backend
+  @window : Window
 
   getter focused : Window?
 
-  def initialize(main_window : Class | Window = Window, backend : Backend | Class | Nil = nil, *, fps = 30, title : String? = nil)
-    main_window = case main_window
+  def initialize(main_window : Class | Window, backend : Backend | Class | Nil = nil, *, @fps = 30, title : String? = nil)
+    @window = case main_window
     when Window then main_window
     else             main_window.new
     end
-    backend = case backend
+    @backend = case backend
     when Backend then backend
     when Class   then backend.new
     else              Backend::DEFAULT.new
     end
+    @previous_draw = 0.seconds
     TUI.logger.info "Application init"
-    super(main_window, backend, fps: fps)
-    main_window.app = self
+    @window.app = self
     self.title = title if title
   end
 
@@ -34,6 +38,77 @@ class TUI::Application
     TUI.logger.info "Application exec ended, stopping backend"
     @backend.stop
     TUI.dump_log
+  end
+
+  # returns true when valid event dispatched
+  #
+  # false on invalid Event class or nil
+  protected def dispatch(event : Event?) : Bool
+    case event
+    when Event::Key then dispatch_key(event)
+    when Event::Mouse then dispatch_mouse(event)
+    when Event::Resize then dispatch_resize(event)
+    else return false
+    end
+    true
+  end
+
+  # Create a draw event and disperse it to the main window
+  # to go down the window tree
+  protected def dispatch_draw
+    event_time = Time.monotonic
+    painter.clear
+    event = Event::Draw.new(painter, @previous_draw - event_time)
+    TUI.logger.info "draw call initiated #{self}"
+    raise "redraw error!" unless @window.handle(event)
+    @backend.paint(painter)
+    @previous_draw = event_time
+  end
+
+  # Pass to the currently focused window, which will then
+  # bubble the event up until it is consumed or reaches the
+  # top of the tree
+  private def dispatch_key(event : Event::Key)
+    unless focus = focused
+      focus = @window
+      TUI.logger.info "No window focused for key event, using top-level #{focus}"
+    end
+    unless focus.handle(event)
+      TUI.logger.info "Unhandled key event #{event}, sent to #{focus}"
+    end
+  end
+
+  # Find the window the event takes place in and pass it,
+  # which wil then bubble the event up until it is
+  # consumed or reaches the top of the tree
+  #
+  # TODO: does not really handle click and hold events
+  # if the mouse moves from when it was pressed to where it is
+  # released
+  private def dispatch_mouse(event : Event::Mouse)
+    # find containing window that is lowest down the tree,
+    # store in cur_window
+    cur_window = @window
+    loop do
+      parent_window = cur_window
+      break if cur_window.block_mouse_events?
+      cur_window.layout.each_window do |child|
+        if child.contains(event)
+          cur_window = child
+          break
+        end
+      end
+      break if parent_window == cur_window # no child contains, parent only
+    end
+  end
+
+  def dispatch_resize(event : Event::Resize)
+    TUI.logger.info "resize dispatched"
+    raise "resize error!" unless @window.handle(event)
+  end
+
+  def dispatch_resize
+    dispatch_resize Event::Resize.new(@backend.width, @backend.height)
   end
 
   def reparent(new_parent : Window)
@@ -54,6 +129,11 @@ class TUI::Application
     @window = new_parent
   end
 
+  protected def painter : Painter
+    raise "Backend not started" unless @backend.started
+    @painter ||= Painter.new(@backend.width, @backend.height)
+  end
+
   def app : Application
     self
   end
@@ -68,4 +148,5 @@ class TUI::Application
   end
 
   delegate :title=, to: @backend
+  delegate :poll, to: @backend
 end

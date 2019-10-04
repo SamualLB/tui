@@ -36,8 +36,7 @@ abstract class TUI::Window
     layout << win
   end
 
-  #abstract def handle(event : Event::Key) : Bool
-  #abstract def handle(event : Event::Mouse) : Bool
+  abstract def paint(surface : Painter)
 
   def handle(event : Event::Resize) : Bool
     unless parent
@@ -49,8 +48,6 @@ abstract class TUI::Window
     layout.set(event, w, h)
     true
   end
-
-  abstract def paint(surface : Painter)
 
   def handle(event : Event::Draw) : Bool
     return false unless paint(event.painter)

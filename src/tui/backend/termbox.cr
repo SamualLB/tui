@@ -117,6 +117,7 @@ class TUI::Backend::Termbox < TUI::Backend
   @previous_mouse : TUI::MouseStatus? = nil
 
   private def map_mouse(i : UInt16) : TUI::MouseStatus?
+    TUI.logger.info "Mouse: #{i}"
     out = case LibTermbox::Key.new(i)
     when LibTermbox::Key::MouseLeft      then TUI::MouseStatus::PrimaryClick
     when LibTermbox::Key::MouseRight     then TUI::MouseStatus::SecondaryClick
@@ -134,6 +135,7 @@ class TUI::Backend::Termbox < TUI::Backend
       end
     else nil
     end
+    TUI.logger.info "Mouse: #{out}"
     @previous_mouse = out
   end
 end
