@@ -38,6 +38,6 @@ SplitChild1.new(win)
 SplitChild2.new(win)
 
 
-app = TUI::Application.new(win, TUI::Backend::Termbox, fps: 2.5, title: "Stack Test")
+app = TUI::Application.new(win, TUI::Backend::NCurses, fps: 2.5, title: "Vertical Split")
 
 app.exec
