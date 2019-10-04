@@ -5,7 +5,7 @@ class TUI::Application
   include EventLoop
 
   property fps : Int32 | Float64
-  getter previous_draw : Time::Span
+  getter previous_draw : Time::Span = 0.seconds
   @parent_stack = [] of Window
   @backend : Backend
   @window : Window
@@ -22,7 +22,6 @@ class TUI::Application
     when Class   then backend.new
     else              Backend::DEFAULT.new
     end
-    @previous_draw = 0.seconds
     TUI.logger.info "Application init"
     @window.app = self
     self.title = title if title
