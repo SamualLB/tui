@@ -67,17 +67,20 @@ abstract class TUI::Window
     end
   end
 
-  # TODO: Bubble up
-  # TODO: Implement key bindings and key method
+  #TODO: Implement key bindings and key method
   def handle(event : Event::Key) : Bool
-    layout.each_window do |child|
-      return true if child.handle(event)
-    end
+    TUI.logger.info "#{self} got #{event}"
+    return true if parent.try &.handle(event)
     false
   end
 
-  # TODO: Bubble up
   def handle(event : Event::Mouse) : Bool
+    TUI.logger.info "#{self} got #{event}"
+    if event.mouse == MouseStatus::PrimaryClick
+      set_focused true
+      return true
+    end
+    return true if parent.try &.handle(event)
     false
   end
 

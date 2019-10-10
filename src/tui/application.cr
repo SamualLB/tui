@@ -58,7 +58,6 @@ class TUI::Application
     event_time = Time.monotonic
     painter.clear
     event = Event::Draw.new(painter, @previous_draw - event_time)
-    TUI.logger.info "draw call initiated #{self}"
     raise "redraw error!" unless @window.handle(event)
     @backend.paint(painter)
     @previous_draw = event_time
@@ -98,6 +97,9 @@ class TUI::Application
         end
       end
       break if parent_window == cur_window # no child contains, parent only
+    end
+    unless cur_window.handle(event)
+      TUI.logger.info "Unhandled mouse event #{event}, sent to: #{cur_window}"
     end
   end
 
@@ -142,8 +144,12 @@ class TUI::Application
   end
 
   def focused=(win : Window?)
-    focused.try &.set_focused(false)
+    return if win == focused
+    old_focus = focused
     @focused = win
+    win.try &.focused = true
+    old_focus.try &.focused = false
+    TUI.logger.info "Set new focus: #{@focused}"
   end
 
   delegate :title=, to: @backend
