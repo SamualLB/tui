@@ -12,8 +12,8 @@ class TUI::Layout::Stacked < TUI::Layout
         win.w = w
         win.h = h
       else
-        win.w = w
-        win.h = h
+        win.w = 0
+        win.h = 0
       end
       win.handle(event)
     end
