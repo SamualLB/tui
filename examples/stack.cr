@@ -29,6 +29,15 @@ class StackChild1 < TUI::Window
 end
 
 class StackChild2 < TUI::Window
+  def initialize(parent : TUI::Window)
+    super
+    bind('a') do |e|
+      TUI.logger.info "#{self} caught 'a' binding"
+      true
+    end
+    bind(TUI::Key::Down) { |e| TUI.logger.info "Down Key Pressed in Stack Child 2"; true }
+  end
+
   def paint(painter : TUI::Painter)
     painter[0, 0] = "Child 2"
     painter[0, 1] = "Dimensions: #{painter.w}x#{painter.h}"

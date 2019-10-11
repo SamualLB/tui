@@ -11,6 +11,8 @@ abstract class TUI::Window
 
   property focused : Bool = false
 
+  @bindings = {} of Key | Char => Proc(Event::Key, Bool)
+
   def initialize(@parent = nil)
     parent << self if parent
   end
@@ -70,6 +72,10 @@ abstract class TUI::Window
   #TODO: Implement key bindings and key method
   def handle(event : Event::Key) : Bool
     TUI.logger.info "#{self} got #{event}"
+    @bindings.each do |k, v|
+      next unless k == event.key
+      return true if v.call(event)
+    end
     return true if parent.try &.handle(event)
     false
   end
@@ -90,5 +96,17 @@ abstract class TUI::Window
 
   protected def contains(event : Event::Mouse) : Bool
     event.x >= x && event.y >= y && event.x < x+w && event.y < y+h
+  end
+
+  def bind(key : Key | Char, &block : Event::Key -> Bool)
+    @bindings[key] = block
+  end
+
+  def unbind_all
+    @bindings.clear
+  end
+
+  def unbind(key : Key | Char)
+    @bindings.delete(key)
   end
 end
