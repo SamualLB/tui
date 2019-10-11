@@ -90,8 +90,38 @@ class TUI::Backend::NCurses < TUI::Backend
     when ::NCurses::Key::F11       then TUI::Key::F11
     when ::NCurses::Key::F12       then TUI::Key::F12
     when ::NCurses::Key::Esc       then TUI::Key::Escape
+    when ::NCurses::Key::ShiftLeft
+      out_event.shift = true
+      TUI::Key::Left
+    when ::NCurses::Key::ShiftRight
+      out_event.shift = true
+      TUI::Key::Right
+    when ::NCurses::Key::ShiftUp
+      out_event.shift = true
+      TUI::Key::Up
+    when ::NCurses::Key::ShiftDown
+      out_event.shift = true
+      TUI::Key::Down
+    when ::NCurses::Key::ShiftTab
+      out_event.shift = true
+      '\t'
+    when ::NCurses::Key::ShiftDelete
+      out_event.shift = true
+      TUI::Key::Delete
+    when ::NCurses::Key::ShiftEnd
+      out_event.shift = true
+      TUI::Key::End
+    when ::NCurses::Key::ShiftHome
+      out_event.shift = true
+      TUI::Key::Home
+    when ::NCurses::Key::ShiftPageDown
+      out_event.shift = true
+      TUI::Key::PageDown
+    when ::NCurses::Key::ShiftPageUp
+      out_event.shift = true
+      TUI::Key::PageUp
     else
-      STDERR.puts "Unhandled NCurses key #{event}"
+      TUI.logger.error "Unhandled key: #{event}"
       return nil
     end
     out_event
