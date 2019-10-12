@@ -57,7 +57,7 @@ class TUI::Backend::Termbox < TUI::Backend
     return nil if type < 1
     case LibTermbox::EventType.new(event.type)
     when LibTermbox::EventType::Key then
-      map_key(event.key, event.ch)
+      map_key(event.key, event.ch, event.mod)
     when LibTermbox::EventType::Resize then
       TUI::Event::Resize.new({event.w, event.h})
     when LibTermbox::EventType::Mouse then
@@ -68,7 +68,8 @@ class TUI::Backend::Termbox < TUI::Backend
     end
   end
 
-  private def map_key(key, ch) : TUI::Event::Key?
+  private def map_key(key, ch, mod) : TUI::Event::Key?
+    TUI.logger.error "Termbox modifier: #{mod}" unless mod == 0
     out_event = TUI::Event::Key.new
     unless ch == 0
       out_event.key = ch.chr
@@ -104,38 +105,30 @@ class TUI::Backend::Termbox < TUI::Backend
     when LibTermbox::Key::F12        then TUI::Key::F12
     when LibTermbox::Key::Escape     then TUI::Key::Escape
     when nil then
-      STDERR.puts "Nil key #{key}: #{key.chr}"
+      TUI.logger.info "Nil key #{key}: #{key.chr}"
       key.chr
     else
-      STDERR.puts "Unhandled Termbox key #{LibTermbox::Key.from_value(key)}: #{key}"
+      TUI.logger.info "Unhandled Termbox key #{LibTermbox::Key.from_value(key)}: #{key}"
       return nil
     end
     out_event
   end
 
-  # Keep track of previous mouse status to see what button was released
-  @previous_mouse : TUI::MouseStatus? = nil
+  @mouse_press : TUI::MouseStatus?
 
   private def map_mouse(i : UInt16) : TUI::MouseStatus?
-    TUI.logger.info "Mouse: #{i}"
     out = case LibTermbox::Key.new(i)
     when LibTermbox::Key::MouseLeft      then TUI::MouseStatus::PrimaryClick
     when LibTermbox::Key::MouseRight     then TUI::MouseStatus::SecondaryClick
     when LibTermbox::Key::MouseMiddle    then TUI::MouseStatus::MiddleClick
     when LibTermbox::Key::MouseWheelUp   then TUI::MouseStatus::ScrollUp
     when LibTermbox::Key::MouseWheelDown then TUI::MouseStatus::ScrollDown
+    # ignore release, only provide unique clicks
     when LibTermbox::Key::MouseRelease
-      case @previous_mouse
-      when TUI::MouseStatus::PrimaryClick   then TUI::MouseStatus::PrimaryRelease
-      when TUI::MouseStatus::SecondaryClick then TUI::MouseStatus::SecondaryRelease
-      when TUI::MouseStatus::MiddleClick    then TUI::MouseStatus::MiddleRelease
-      else
-        STDERR.puts "Unrecognised Termbox previous mouse: #{@previous_mouse}"
-        nil
-      end
+      @mouse_press = nil
+      return nil
     else nil
     end
-    TUI.logger.info "Mouse: #{out}"
-    @previous_mouse = out
+    @mouse_press ? nil : (@mouse_press = out)
   end
 end
