@@ -12,7 +12,7 @@ class TUI::Application
 
   getter focused : Window?
 
-  def initialize(main_window : Class | Window, backend : Backend | Class | Nil = nil, *, @fps = 30, title : String? = nil)
+  def initialize(main_window : Class | Window, backend : Backend | Class | Nil = nil,first_focus : Window? = nil , *, @fps = 30, title : String? = nil)
     @window = case main_window
     when Window then main_window
     else             main_window.new
@@ -24,6 +24,7 @@ class TUI::Application
     end
     TUI.logger.info "Application init"
     @window.app = self
+    first_focus.set_focused(true) if first_focus
     self.title = title if title
   end
 
