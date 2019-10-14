@@ -50,7 +50,10 @@ abstract class TUI::Window
     layout << win
   end
 
-  abstract def paint(surface : Painter)
+  # Override to draw in the widget
+  def paint(surface : Painter) : Bool
+    true
+  end
 
   def handle(event : Event::Resize) : Bool
     unless parent
@@ -153,3 +156,5 @@ abstract class TUI::Window
     self
   end
 end
+
+require "./window/*"
