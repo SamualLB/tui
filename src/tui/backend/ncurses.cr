@@ -7,6 +7,8 @@ class TUI::Backend::NCurses < TUI::Backend
   def start : self
     raise "TUI Backend already active" if @started
     ::NCurses.start
+    ::NCurses.no_echo
+    ::NCurses.set_cursor ::NCurses::Cursor::Invisible
     ::NCurses.keypad true
     ::NCurses.mouse_mask(::NCurses::Mouse::AllEvents | ::NCurses::Mouse::Position)
     @started = true
