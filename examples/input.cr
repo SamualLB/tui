@@ -15,12 +15,11 @@ class Input < TUI::Window
   end
 
   def paint(painter : TUI::Painter)
-    str = case i = @prev_input
-          when TUI::Event::Mouse then "Mouse event: #{i.mouse}"
+    painter[5, painter.h//2] = case i = @prev_input
+    when TUI::Event::Mouse then "Mouse event: #{i.mouse}"
     when TUI::Event::Key then "Key event: #{i.key}"
     else "~~~~~~~"
     end
-    painter[5,painter.h//2] = str
     true
   end
 end
