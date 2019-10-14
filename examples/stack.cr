@@ -47,9 +47,8 @@ end
 
 win = Stack.new
 StackChild1.new(win)
-StackChild2.new(win)
+child_2 = StackChild2.new(win)
 
-
-app = TUI::Application.new(win, TUI::Backend::Termbox, fps: 2.5, title: "Stack Test")
+app = TUI::Application.new(win, TUI::Backend::Termbox, child_2, fps: 2.5, title: "Stack Test")
 
 app.exec
