@@ -16,7 +16,7 @@ module TUI::EventLoop
     TUI.logger.info "Event loop exec started #{self}"
     app.dispatch_resize
     loop do
-      while Time.monotonic < app.previous_draw + (1 / app.fps).seconds
+      while Time.monotonic < (app.previous_draw + (1.0 / app.fps).seconds)
         handled = app.dispatch(app.poll)
         sleep(app.previous_draw + (1 / app.fps).seconds - Time.monotonic) unless handled
       end
