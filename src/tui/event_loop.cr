@@ -17,23 +17,12 @@ module TUI::EventLoop
     app.dispatch_resize
     loop do
       while Time.monotonic < (app.previous_draw + (1.0 / app.fps).seconds)
-        handled = app.dispatch(app.poll)
+        handled = false
+        handled = true if app.check_callbacks
+        handled = true if app.dispatch(app.poll)
         sleep(app.previous_draw + (1 / app.fps).seconds - Time.monotonic) unless handled
       end
       app.dispatch_draw
-      {% if env("NOTEPAD_TEST") %}
-      if self.is_a?(Application) && !@modal_drawn && (Time.monotonic - start_time) >= 2.5.seconds
-        TUI.logger.info "Starting the notepad test modal"
-        @modal_drawn = true
-        NotepadPopup.exec(self)
-      end
-      {% elsif env("STACK_TEST") %}
-      if self.is_a?(Application) && !@modal_drawn && (Time.monotonic - start_time) >= 2.5.seconds
-        TUI.logger.info "Swapping stack"
-        @modal_drawn = true
-        app.@window.layout.as(Layout::Stacked).index = 1
-      end
-      {% end %}
       break if @stop
       break if (Time.monotonic - start_time) >= 5.seconds
     end

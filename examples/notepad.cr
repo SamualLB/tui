@@ -32,4 +32,8 @@ end
 
 app = TUI::Application.new(Notepad, TUI::Backend::NCurses, fps: 2.5, title: "Notepad")
 
+app.callback(2.5.seconds) do
+  NotepadPopup.exec(app)
+end
+
 app.exec

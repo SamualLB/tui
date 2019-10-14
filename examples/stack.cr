@@ -30,6 +30,10 @@ win = TUI::Window::Stacked.new
 StackChild1.new(win)
 child_2 = StackChild2.new(win)
 
-app = TUI::Application.new(win, TUI::Backend::Termbox, child_2, fps: 2.5, title: "Stack Test")
+app = TUI::Application.new(win, TUI::Backend::NCurses, child_2, fps: 2.5, title: "Stack Test")
+
+app.callback(2.5.seconds) do
+  app.@window.as(TUI::Window::Stacked).layout.index = 1
+end
 
 app.exec

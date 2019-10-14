@@ -9,10 +9,11 @@ class TUI::Application
   @parent_stack = [] of Window
   @backend : Backend
   @window : Window
+  @callbacks = Deque({start: Time::Span, run: Time::Span, proc: Proc(Nil)}).new
 
   getter focused : Window?
 
-  def initialize(main_window : Class | Window, backend : Backend | Class | Nil = nil,first_focus : Window? = nil , *, @fps = 30, title : String? = nil)
+  def initialize(main_window : Class | Window, backend : Backend | Class | Nil = nil,first_focus : Window? = nil , *, @fps = 5, title : String? = nil)
     @window = case main_window
     when Window then main_window
     else             main_window.new
@@ -111,6 +112,23 @@ class TUI::Application
 
   def dispatch_resize
     dispatch_resize Event::Resize.new(@backend.width, @backend.height)
+  end
+
+  def callback(span : Time::Span, &block : Proc(Nil)) : self
+    call_time = Time.monotonic
+    @callbacks << {start: call_time, run: call_time + span, proc: block}
+    self
+  end
+
+  def check_callbacks : Bool
+    cur_time = Time.monotonic
+    @callbacks.each do |tup|
+      next unless cur_time >= tup[:run]
+      @callbacks.delete(tup)
+      tup[:proc].call
+      return true
+    end
+    false
   end
 
   def reparent(new_parent : Window)
