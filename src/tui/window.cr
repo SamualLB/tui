@@ -11,10 +11,22 @@ abstract class TUI::Window
 
   property focused : Bool = false
 
-  @bindings = {} of Key | Char => Proc(Event::Key, Bool)
+  @key_bindings = {} of Key | Char => Proc(Event::Key, Bool)
+  @mouse_bindings = {} of MouseStatus => Proc(Event::Mouse, Bool)
 
   def initialize(@parent = nil)
     parent << self if parent
+    bind(MouseStatus::PrimaryClick) { |e| set_focused true; true }
+  end
+
+  # Overwrite to handle other unknown key presses
+  def key(event : Event::Key) : Bool
+    false
+  end
+
+  # Overwrite to handle other unknown mouse events
+  def mouse(event : Event::Mouse) : Bool
+    false
   end
 
   def app : Application
@@ -69,23 +81,30 @@ abstract class TUI::Window
     end
   end
 
-  #TODO: Implement key bindings and key method
+  # Handle an event:
+  #
+  # * Firstly see if it has been bound
+  # * Secondly pass to the overwritable key method
+  # * Then pass to the parent recursively
+  #
+  # When there are no parent, false is returned and the event
+  # is left unhandled
   def handle(event : Event::Key) : Bool
     TUI.logger.info "#{self} got #{event}"
-    @bindings.each do |k, v|
-      next unless k == event.key
-      return true if v.call(event)
-    end
+    # Find key binding and run
+    @key_bindings[event.key]?.try { |bind| return true if bind.call(event) }
+    # Run generic key method
+    return true if key(event)
+    # Pass to parent
     return true if parent.try &.handle(event)
     false
   end
 
+  # ditto
   def handle(event : Event::Mouse) : Bool
     TUI.logger.info "#{self} got #{event}"
-    if event.mouse == MouseStatus::PrimaryClick
-      set_focused true
-      return true
-    end
+    @mouse_bindings[event.mouse]?.try { |bind| return true if bind.call(event) }
+    return true if mouse(event)
     return true if parent.try &.handle(event)
     false
   end
@@ -98,15 +117,39 @@ abstract class TUI::Window
     event.x >= x && event.y >= y && event.x < x+w && event.y < y+h
   end
 
-  def bind(key : Key | Char, &block : Event::Key -> Bool)
-    @bindings[key] = block
+  def bind(key : Key | Char, &block : Event::Key -> Bool) : self
+    @key_bindings[key] = block
+    self
   end
 
-  def unbind_all
-    @bindings.clear
+  def unbind(key : Key | Char) : self
+    @key_bindings.delete(key)
+    self
   end
 
-  def unbind(key : Key | Char)
-    @bindings.delete(key)
+  def unbind_keys : self
+    @key_bindings.clear
+    self
+  end
+
+  def bind(mouse : MouseStatus, &block : Event::Mouse -> Bool) : self
+    @mouse_bindings[mouse] = block
+    self
+  end
+
+  def unbind(mouse : MouseStatus) : self
+    @mouse_bindings.delete(mouse)
+    self
+  end
+
+  def unbind_mouse : self
+    @mouse_bindings.clear
+    self
+  end
+
+  def unbind_all : self
+    @key_bindings.clear
+    @mouse_bindings.clear
+    self
   end
 end
