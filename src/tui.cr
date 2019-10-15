@@ -6,7 +6,6 @@ module TUI
 
   @@logger_file : File = File.tempfile
   class_getter logger = Logger.new(@@logger_file)
-  self.logger.info "Logger init"
 
   def self.dump_log
     @@logger_file.rewind.each_line do |l|

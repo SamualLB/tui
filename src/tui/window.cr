@@ -93,7 +93,6 @@ abstract class TUI::Window
   # When there are no parent, false is returned and the event
   # is left unhandled
   def handle(event : Event::Key) : Bool
-    TUI.logger.info "#{self} got #{event}"
     # Find key binding and run
     @key_bindings[event.key]?.try { |bind| return true if bind.call(event) }
     # Run generic key method
@@ -105,7 +104,6 @@ abstract class TUI::Window
 
   # ditto
   def handle(event : Event::Mouse) : Bool
-    TUI.logger.info "#{self} got #{event}"
     @mouse_bindings[event.mouse]?.try { |bind| return true if bind.call(event) }
     return true if mouse(event)
     return true if parent.try &.handle(event)

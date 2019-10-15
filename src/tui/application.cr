@@ -23,7 +23,6 @@ class TUI::Application
     when Class   then backend.new
     else              Backend::DEFAULT.new
     end
-    TUI.logger.info "Application init"
     @window.app = self
     first_focus.set_focused(true) if first_focus
     self.title = title if title
@@ -31,12 +30,10 @@ class TUI::Application
 
   # Main loop
   def exec
-    TUI.logger.info "Application exec started, starting backend"
     @backend.start
     painter # Generate
     super
   ensure
-    TUI.logger.info "Application exec ended, stopping backend"
     @backend.stop
     TUI.dump_log
   end
@@ -106,7 +103,6 @@ class TUI::Application
   end
 
   def dispatch_resize(event : Event::Resize)
-    TUI.logger.info "resize dispatched"
     raise "resize error!" unless @window.handle(event)
   end
 
