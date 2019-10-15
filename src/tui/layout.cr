@@ -1,3 +1,5 @@
+require "./window"
+
 abstract class TUI::Layout
   getter! window : Window
 
