@@ -110,6 +110,11 @@ struct TUI::Painter
     x_extra = 0
     y_extra = 0
     str.each_char do |c|
+      if c == '\n'
+        x_extra = 0
+        y_extra += 1
+        next
+      end
       self[i+x_extra, j+y_extra] = c
       x_extra += 1
       if x_extra >= width

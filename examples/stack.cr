@@ -26,6 +26,10 @@ class StackChild2 < TUI::Window
 end
 
 win = TUI::Window::Stacked.new
+win.bind('q') do
+  TUI.logger.info "Exiting"
+  win.app.stop = true
+end
 
 StackChild1.new(win)
 child_2 = StackChild2.new(win)

@@ -1,39 +1,41 @@
 require "../src/tui"
 
 class Notepad < TUI::Window
+  @buffer = IO::Memory.new
+  @mode = Mode::Command
+
   def paint(painter : TUI::Painter)
-    painter[0, 0] = "Notepad"
+    painter[0, 0] = "Mode: #{@mode}"
+    painter[0, 1] = @buffer.to_s
     true
   end
 
-  def handle(event : TUI::Event::Key) : Bool
-    layout.each_window do |child|
-      return true if child.handle(event)
+  def key(event : TUI::Event::Key) : Bool
+    case @mode
+    when Mode::Insert
+      case k = event.key
+      when TUI::Key::Escape then @mode = Mode::Command
+      when Char then @buffer << k
+      end
+    when Mode::Command
+      case event.key
+      when 'i' then @mode = Mode::Insert
+      when 'q' then app.stop = true
+      end
     end
-    TUI.logger.info "Notepad pretended to handle key event: #{event}"
     true
   end
 
-  def handle(event : TUI::Event::Mouse) : Bool
-    TUI.logger.info "Notepad pretended to handle mouse event: #{event}"
-    true
+  enum Mode
+    Command
+    Insert
   end
 end
 
-class NotepadPopup < TUI::Modal
-  def paint(painter : TUI::Painter)
-    painter[0, 1] = "Popup"
-    painter[50, 2] = "really long string that goes over multiple lines and isnfjds sdnjflnsn fdns nnsf kjdnfjksnkj nkjsnkj nfka noenfoiajnln g;ajrisj ijaios jgjfajgjhrnufnbgka bnan gbeu gfui biu bniafbnei niufnin diugn e ga euib iubneiugnbnbie eiuf gu eiuh ngaeui hghi huiguiaeniu niuae ei u;iea ffebh igbh ae;ifg ua beui f;ia bfuie auebi ieif fib iubuih uigi  iuae buinbuaieubg niubi"
-    painter[50, 12, 10] = "really long string that goes over multiple lines and isnfjds sdnjflnsn fdns nnsf kjdnfjksnkj nkjsnkj nfka noenfoiajnln g;ajrisj ijaios jgjfajgjhrnufnbgka bnan gbeu gfui biu bniafbnei niufnin diugn e ga euib iubneiugnbnbie eiuf gu eiuh ngaeui hghi huiguiaeniu niuae ei u;iea ffebh igbh ae;ifg ua beui f;ia bfuie auebi ieif fib iubuih uigi  iuae buinbuaieubg niubi"
-    painter[5, 0] = '!'
-    true
-  end
-end
+win = Notepad.new
 
-app = TUI::Application.new(Notepad, TUI::Backend::NCurses, fps: 2.5, title: "Notepad")
+app = TUI::Application.new(win, TUI::Backend::NCurses, fps: 2.5, title: "Notepad")
 
-app.callback(2.5.seconds) do
-  NotepadPopup.exec(app)
-end
+win.set_focused true
 
 app.exec

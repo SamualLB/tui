@@ -19,6 +19,12 @@ class UnicodeTest < TUI::Window
   end
 end
 
-app = TUI::Application.new(UnicodeTest, TUI::Backend::NCurses, fps: 1, title: "Unicode Test")
+win = UnicodeTest.new
+win.bind('q') do
+  TUI.logger.info "Exiting"
+  win.app.stop = true
+end
+
+app = TUI::Application.new(win, TUI::Backend::NCurses, fps: 1, title: "Unicode Test")
 
 app.exec

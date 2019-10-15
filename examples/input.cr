@@ -3,6 +3,14 @@ require "../src/tui"
 class Input < TUI::Window
   @prev_input : TUI::Event? = nil
 
+  def initialize(parent : TUI::Window? = nil)
+    super
+    bind('q') do
+      TUI.logger.info "Exiting"
+      app.stop = true
+    end
+  end
+
   def key(e : TUI::Event::Key)
     @prev_input = e
     true

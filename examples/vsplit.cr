@@ -4,6 +4,10 @@ class Split < TUI::Window
   def initialize
     @layout = TUI::Layout::Vertical.new(self)
     super
+    bind('q') do
+      TUI.logger.info "Exiting"
+      app.stop = true
+    end
   end
 
   def paint(painter : TUI::Painter)
