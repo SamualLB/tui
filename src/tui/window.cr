@@ -56,13 +56,14 @@ abstract class TUI::Window
   end
 
   def handle(event : Event::Resize) : Bool
-    unless parent
+    if parent.nil?
       self.x = 0
       self.y = 0
       self.w = event.width
       self.h = event.height
     end
     layout.set(event, w, h)
+    TUI.logger.info "Resized #{self}: #{self.w}, #{self.h}"
     true
   end
 

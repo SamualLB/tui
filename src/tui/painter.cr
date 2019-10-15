@@ -4,7 +4,7 @@
 # When drawing use `#w` and `#h` for actual size
 #
 # Use `#pop` after drawing
-struct TUI::Painter
+class TUI::Painter
   @surface : Array(Array(Cell))
 
   @global_w : Int32
@@ -29,6 +29,14 @@ struct TUI::Painter
     @w = @global_w = wh[0]
     @h = @global_h = wh[1]
     @surface = Array.new(wh[0]) { Array.new(wh[1]) { Cell.new } }
+  end
+
+  def resize(w, h) : self
+    @w = @global_w = w
+    @h = @global_h = h
+    @surface = Array.new(w) { Array.new(h) { Cell.new } }
+    @stack.clear
+    self
   end
 
   # Push new offsets onto stack

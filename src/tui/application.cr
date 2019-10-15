@@ -58,6 +58,7 @@ class TUI::Application
     painter.clear
     event = Event::Draw.new(painter, @previous_draw - event_time)
     raise "redraw error!" unless @window.handle(event)
+    @backend.clear
     @backend.paint(painter)
     @previous_draw = event_time
   end
@@ -103,6 +104,8 @@ class TUI::Application
   end
 
   def dispatch_resize(event : Event::Resize)
+    painter.resize(event.width, event.height)
+    TUI.logger.info "Dispatching resize: #{event}"
     raise "resize error!" unless @window.handle(event)
   end
 
