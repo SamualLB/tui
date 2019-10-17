@@ -143,4 +143,10 @@ class TUI::Painter
   def print(i, j, str : String)
     self[i, j] = str
   end
+
+  def to_s(io : IO)
+    io << "Dimensions: " << w << ", " << h << '\n'
+    io << "Offsets: " << @offset_x << ", " << @offset_y << '\n'
+    io << "Stack: " << @stack
+  end
 end
