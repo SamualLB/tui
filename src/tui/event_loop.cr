@@ -13,7 +13,7 @@ module TUI::EventLoop
         handled = false
         handled = true if app.check_callbacks
         handled = true if app.dispatch(app.poll)
-        sleep(app.previous_draw + (1 / app.fps).seconds - Time.monotonic) unless handled
+        sleep(app.previous_draw + (1.0 / app.fps).seconds - Time.monotonic) unless handled
       end
       app.dispatch_draw
       break if @stop
