@@ -16,4 +16,9 @@ class TUI::Window::Main < TUI::Window
     end
     @layout = l
   end
+
+  def <<(win : Window)
+  end
+
+  delegate :top=, :bottom=, to: layout
 end

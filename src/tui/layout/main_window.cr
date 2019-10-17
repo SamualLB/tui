@@ -14,6 +14,7 @@ class TUI::Layout::MainWindow < TUI::Layout
       t.w = w
       t.h = 1
       leftover_h -= 1
+      t.handle(event)
     end
     @bottom_menu.try do |b|
       b.x = 0
@@ -21,16 +22,28 @@ class TUI::Layout::MainWindow < TUI::Layout
       b.w = w
       b.h = 1
       leftover_h -= 1
+      b.handle(event)
     end
     @main_window.try do |m|
       m.x = 0
       m.y = @top_menu ? 1 : 0
       m.w = w
       m.h = leftover_h
+      m.handle(event)
     end
   end
 
+  def top=(win : Window::Menu)
+    @top_menu = win
+  end
+
+  def bottom=(win : Window::Menu)
+    @bottom_menu = win
+  end
+
   def <<(win : Window)
+    return if @top_menu == win
+    return if @bottom_menu == win
     @main_window = win
   end
 
