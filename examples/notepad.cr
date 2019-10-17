@@ -15,6 +15,8 @@ class Notepad < TUI::Window
     when Mode::Insert
       case k = event.key
       when TUI::Key::Escape then @mode = Mode::Command
+      when TUI::Key::Backspace then @buffer.pos = @buffer.pos-1
+      when '\t' then @buffer << ((@buffer.pos % 2 == 0) ? "  " : ' ')
       when Char then @buffer << k
       end
     when Mode::Command
