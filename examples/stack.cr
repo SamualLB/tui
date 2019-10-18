@@ -30,6 +30,8 @@ win.bind('q') do
   TUI.logger.info "Exiting"
   win.app.stop = true
 end
+win.bind '1' { win.index = 0; true }
+win.bind '2' { win.index = 1; true }
 
 StackChild1.new(win)
 child_2 = StackChild2.new(win)

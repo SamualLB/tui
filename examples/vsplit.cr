@@ -9,10 +9,6 @@ class Split < TUI::Window
       app.stop = true
     end
   end
-
-  def paint(painter : TUI::Painter)
-    true
-  end
 end
 
 class SplitChild1 < TUI::Window
@@ -27,14 +23,6 @@ class SplitChild1 < TUI::Window
 end
 
 class SplitChild2 < TUI::Window
-  def initialize(parent : TUI::Window)
-    super(parent)
-    bind(TUI::MouseStatus::ScrollUp) do |event|
-      TUI.logger.info "Scroll up event binded and caught"
-      true
-    end
-  end
-
   def paint(painter : TUI::Painter)
     painter[0, 0] = "Child 2"
     painter[0, 1] = "Dimensions: #{painter.w}x#{painter.h}"
