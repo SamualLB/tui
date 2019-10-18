@@ -223,4 +223,32 @@ class TUI::Painter
     end
     self
   end
+
+  def rect(x0 : Int32, y0 : Int32, x1 : Int32, y1 : Int32, ch : Char = '█') : self
+    hline(x0, y0, x1-x0, ch)
+    vline(x0, y0, y1-y0, ch)
+    hline(x0, y1, x1-x0, ch)
+    vline(x1, y0, y1-y0, ch)
+    self[x1, y1] = ch
+    self
+  end
+
+  # Draws a polygon with points specified in separate arrays of x and y coordinates
+  def poly(x_points : Array(Int32), y_points : Array(Int32), ch : Char = '█') : self
+    unless x_points.size == y_points.size
+      raise ArgumentError.new(
+        "non-matching number of points for #poly: #{x_points.size} & #{y_points.size}")
+    end
+    x_points.size.times do |i|
+      line(x_points[i], y_points[i], x_points[i+1], y_points[i+1], ch)
+      break if i == x_points.size-2
+    end
+    line(x_points.last, y_points.last, x_points.first, y_points.first, ch)
+    self
+  end
+
+  # Draws a polygon with points specified as an array of coordinate tuples
+  def poly(points : Array(Tuple(Int32, Int32)), ch : Char = '█') : self
+    poly(Array.new(points.size) { |i| points[i][0] }, Array.new(points.size) { |i| points[i][1] }, ch)
+  end
 end
