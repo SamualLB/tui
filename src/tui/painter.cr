@@ -190,4 +190,37 @@ class TUI::Painter
     end
     self
   end
+
+  # TODO: do not set negative coordinate values
+  def circle(x0 : Int32, y0 : Int32, radius : Int32 = 5, ch : Char = '█') self
+    self[x0, y0 + radius] = ch
+    self[x0, y0 - radius] = ch
+    self[x0 + radius, y0] = ch
+    self[x0 - radius, y0] = ch
+
+    f = 1 - radius
+    ddf_x = 1
+    ddf_y = -2 * radius
+    x = 0
+    y = radius
+    while x < y
+      if f >= 0
+        y -= 1
+        ddf_y += 2
+        f += ddf_y
+      end
+      x += 1
+      ddf_x += 2
+      f += ddf_x
+      self[x0 + x, y0 + y] = ch
+      self[x0 + x, y0 - y] = ch
+      self[x0 - x, y0 + y] = ch
+      self[x0 - x, y0 - y] = ch
+      self[x0 + y, y0 + x] = ch
+      self[x0 + y, y0 - x] = ch
+      self[x0 - y, y0 + x] = ch
+      self[x0 - y, y0 - x] = ch
+    end
+    self
+  end
 end
