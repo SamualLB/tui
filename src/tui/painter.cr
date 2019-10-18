@@ -56,9 +56,8 @@ class TUI::Painter
   end
 
   # Pop offsets from stack
-  #
-  # TODO: raises when stack is empty?
   def pop : self
+    return self if @stack.empty?
     @offset_x, @offset_y, @w, @h = @stack.pop
     self
   end
@@ -148,5 +147,47 @@ class TUI::Painter
     io << "Dimensions: " << w << ", " << h << '\n'
     io << "Offsets: " << @offset_x << ", " << @offset_y << '\n'
     io << "Stack: " << @stack
+  end
+
+  def line(x0 : Int32, y0 : Int32, x1 : Int32, y1 : Int32, ch : Char = '█') : self
+    dx = (x1 - x0).abs
+    sx = x0 < x1 ? 1 : -1
+    dy = -(y1 - y0).abs
+    sy = y0 < y1 ? 1 : -1
+    err = dx + dy
+    loop do
+      self[x0, y0] = ch
+      break if x0 == x1 && y0 == y1
+      e2 = 2 * err
+      if e2 >= dy
+        err += dy
+        x0 += sx
+      end
+      if e2 <= dx
+        err += dx
+        y0 += sy
+      end
+    end
+    self
+  end
+
+  def vline(x0 : Int32, y0 : Int32, len : Int32, ch : Char = '█') : self
+    until len == 0
+      self[x0, y0] = ch
+      diff = len < 0 ? 1 : -1
+      y0 -= diff
+      len += diff
+    end
+    self
+  end
+
+  def hline(x0 : Int32, y0 : Int32, len : Int32, ch : Char = '█') : self
+    until len == 0
+      self[x0, y0] = ch
+      diff = len < 0 ? 1 : -1
+      x0 -= diff
+      len += diff
+    end
+    self
   end
 end
