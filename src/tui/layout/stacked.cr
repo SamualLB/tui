@@ -38,8 +38,15 @@ class TUI::Layout::Stacked < TUI::Layout
     @windows[@index.as(Int32)]
   end
 
-  def index=(new : Int32)
-    @index = new
+  def index : Int32
+    @index.not_nil!
+  end
+
+  def index=(i : Int32)
+    unless i < @windows.size && i >= 0
+      raise "invalid stacked layout index #{i}/#{@windows.size-1}"
+    end
+    @index = i
     window.app.dispatch_resize
   end
 

@@ -16,4 +16,10 @@ class TUI::Window::Stacked < TUI::Window
     end
     @layout = l
   end
+
+  def index=(i : Int32)
+    layout.index = i
+  end
+
+  delegate index, to: layout
 end
