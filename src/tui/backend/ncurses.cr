@@ -10,7 +10,7 @@ class TUI::Backend::NCurses < TUI::Backend
     ::NCurses.no_echo
     ::NCurses.set_cursor ::NCurses::Cursor::Invisible
     ::NCurses.keypad true
-    ::NCurses.mouse_mask(::NCurses::Mouse::AllEvents | ::NCurses::Mouse::Position)
+    ::NCurses.mouse_mask(::NCurses::Mouse::All)
     @started = true
     self
   end
@@ -129,13 +129,11 @@ class TUI::Backend::NCurses < TUI::Backend
     out_event
   end
 
-  private def map_mouse(i : ::NCurses::MouseEvent) : TUI::Event::Mouse
+  private def map_mouse(i : ::NCurses::MouseEvent) : TUI::Event::Mouse?
     outp = TUI::Event::Mouse.new({i.coordinates[:x], i.coordinates[:y]})
     outp.mouse = TUI::MouseStatus::None
-    i.state.each do |s|
-      new_state = convert_mouse_state(s)
-      outp.mouse = outp.mouse | new_state
-    end
+    i.state.each { |s| outp.mouse |= convert_mouse_state(s) }
+    return nil if outp.mouse == TUI::MouseStatus::None
     outp
   end
 
@@ -161,7 +159,9 @@ class TUI::Backend::NCurses < TUI::Backend
 
     when ::NCurses::Mouse::B4Pressed then TUI::MouseStatus::ScrollUp
     when ::NCurses::Mouse::B5Pressed then TUI::MouseStatus::ScrollDown
-    else TUI::MouseStatus::None
+    else
+      TUI.logger.info "Unknown NCurses mouse state: #{i}"
+      TUI::MouseStatus::None
     end
   end
 end

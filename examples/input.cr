@@ -9,6 +9,7 @@ class Input < TUI::Window
       TUI.logger.info "Exiting"
       app.stop = true
     end
+    unbind TUI::MouseStatus::PrimaryClick
   end
 
   def key(e : TUI::Event::Key)
