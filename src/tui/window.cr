@@ -1,8 +1,5 @@
 abstract class TUI::Window
-  property! w : Int32
-  property! h : Int32
-  property! x : Int32
-  property! y : Int32
+  property! rect : Rect
 
   getter parent : Window?
 
@@ -57,13 +54,9 @@ abstract class TUI::Window
 
   def handle(event : Event::Resize) : Bool
     if parent.nil?
-      self.x = 0
-      self.y = 0
-      self.w = event.width
-      self.h = event.height
+      self.rect = Rect.new(event.width, event.height)
     end
-    layout.set(event, w, h)
-    TUI.logger.info "Resized #{self}: #{self.w}, #{self.h}"
+    layout.set(event, rect)
     true
   end
 
@@ -154,6 +147,8 @@ abstract class TUI::Window
     @mouse_bindings.clear
     self
   end
+
+  delegate x, y, w, h, to: rect
 end
 
 require "./window/*"

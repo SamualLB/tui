@@ -20,7 +20,7 @@ abstract class TUI::Layout
   abstract def <<(win : Window)
 
   # Define to set the actual layout
-  abstract def set(event, w, h)
+  abstract def set(event, rect : Rect)
 
   # Used to build draw tree
   abstract def each_window(&block : Window -> Nil)

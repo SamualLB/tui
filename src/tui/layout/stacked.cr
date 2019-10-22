@@ -4,16 +4,12 @@ class TUI::Layout::Stacked < TUI::Layout
   @windows = [] of Window
 
   # Sets selected window to full screen
-  def set(event, w, h)
+  def set(event, rect)
     @windows.each_with_index do |win, i|
-      win.x = 0
-      win.y = 0
       if i == @index
-        win.w = w
-        win.h = h
+        win.rect = Rect.new(rect.w, rect.h)
       else
-        win.w = 0
-        win.h = 0
+        win.rect = Rect.new(0, 0)
       end
       win.handle(event)
     end

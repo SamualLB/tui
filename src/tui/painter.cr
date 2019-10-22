@@ -7,33 +7,32 @@
 class TUI::Painter
   @surface : Array(Array(Cell))
 
-  @global_w : Int32
-  @global_h : Int32
-
   # Current rect
-  @offset_x = 0
-  @offset_y = 0
-  getter w : Int32
-  getter h : Int32
+  @current_rect : Rect
 
   # {x, y, w, h} offsets
-  @stack = [] of {Int32, Int32, Int32, Int32}
+  @stack = [] of Rect
+
+  def w : Int32
+    @current_rect.w
+  end
+
+  def h : Int32
+    @current_rect.h
+  end
 
   def initialize(w, h)
-    @w = @global_w = w
-    @h = @global_h = h
+    @current_rect = Rect.new(w, h)
     @surface = Array.new(w) { Array.new(h) { Cell.new } }
   end
 
   def initialize(wh : {Int32, Int32})
-    @w = @global_w = wh[0]
-    @h = @global_h = wh[1]
+    @current_rect = Rect.new(wh[0], wh[1])
     @surface = Array.new(wh[0]) { Array.new(wh[1]) { Cell.new } }
   end
 
   def resize(w, h) : self
-    @w = @global_w = w
-    @h = @global_h = h
+    @current_rect = Rect.new(w, h)
     @surface = Array.new(w) { Array.new(h) { Cell.new } }
     @stack.clear
     self
@@ -46,19 +45,19 @@ class TUI::Painter
     if new_x < 0 || new_y < 0 || new_w < 0 || new_h < 0
       raise ArgumentError.new("Negative value given: #{new_x}, #{new_y}, #{new_w}, #{new_h}")
     end
-    prev_x, prev_y, prev_w, prev_h = @offset_x, @offset_y, w, h
-    @stack.push({prev_x, prev_y, prev_w, prev_h})
-    @offset_x += new_x
-    @offset_y += new_y
-    @w = Math.max(0, Math.min(new_w, prev_w - new_x))
-    @h = Math.max(0, Math.min(new_h, prev_h - new_y))
+    @stack << @current_rect
+    @current_rect = Rect.new(
+      @current_rect.x + new_x,
+      @current_rect.y + new_y,
+      Math.max(0, Math.min(new_w, w - new_x)),
+      Math.max(0, Math.min(new_h, h - new_y)))
     self
   end
 
   # Pop offsets from stack
   def pop : self
     return self if @stack.empty?
-    @offset_x, @offset_y, @w, @h = @stack.pop
+    @current_rect = @stack.pop
     self
   end
 
@@ -88,7 +87,7 @@ class TUI::Painter
         j < h &&
         i >= 0 &&
         j >= 0
-    @surface[@offset_x+i][@offset_y+j]
+    @surface[@current_rect.x+i][@current_rect.y+j]
   end
 
   def [](i, j) : Cell
@@ -103,7 +102,7 @@ class TUI::Painter
         j < h &&
         i >= 0 &&
         j >= 0
-    @surface[@offset_x+i][@offset_y+j] = val
+    @surface[@current_rect.x+i][@current_rect.y+j] = val
   end
 
   def []=(i, j, val : Char)
@@ -144,8 +143,7 @@ class TUI::Painter
   end
 
   def to_s(io : IO)
-    io << "Dimensions: " << w << ", " << h << '\n'
-    io << "Offsets: " << @offset_x << ", " << @offset_y << '\n'
+    io << "Current rect: #{@current_rect}."
     io << "Stack: " << @stack
   end
 
