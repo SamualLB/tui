@@ -13,22 +13,28 @@ end
 
 class SplitChild1 < TUI::Window
   def paint(painter : TUI::Painter)
-    painter[0, 0] = "Child 1"
-    painter[0, 1] = "Dimensions: #{painter.w}x#{painter.h}"
-    painter[-1, -1] = '┘'
-    painter[-1, 0] = '┐'
-    painter[0, -1] = '└'
+    painter[1, 1] = "Child 1"
+    painter[1, 2] = "Dimensions: #{painter.w}x#{painter.h}"
+    painter.hline(0, 0, painter.w, '─').hline(0, painter.h-1, painter.w, '─')
+    painter.vline(0, 0, painter.h, '│').vline(painter.w-1, 0, painter.h, '│')
+    painter[0, 0] = '╭'
+    painter[-1, -1] = '╯'
+    painter[-1, 0] = '╮'
+    painter[0, -1] = '╰'
     true
   end
 end
 
 class SplitChild2 < TUI::Window
   def paint(painter : TUI::Painter)
-    painter[0, 0] = "Child 2"
-    painter[0, 1] = "Dimensions: #{painter.w}x#{painter.h}"
-    painter[-1, -1] = '┘'
-    painter[-1, 0] = '┐'
-    painter[0, -1] = '└'
+    painter[1, 1] = "Child 2"
+    painter[1, 2] = "Dimensions: #{painter.w}x#{painter.h}"
+    painter.hline(0, 0, painter.w, '─').hline(0, painter.h-1, painter.w, '─')
+    painter.vline(0, 0, painter.h, '│').vline(painter.w-1, 0, painter.h, '│')
+    painter[0, 0] = '╭'
+    painter[-1, -1] = '╯'
+    painter[-1, 0] = '╮'
+    painter[0, -1] = '╰'
     true
   end
 end
