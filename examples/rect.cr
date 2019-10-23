@@ -7,8 +7,8 @@ class RectDrawer < TUI::Window
   end
 
   def paint(painter : TUI::Painter)
-    painter.rect(painter.w//8, painter.h//8, painter.w//8*3, painter.h//8*3, '#')
-    painter.rect(painter.w//8*7, painter.h//8*7, painter.w//8*5, painter.h//8*5, '#')
+    painter.rect(painter.w//8, painter.h//8, painter.w//8*3, painter.h//8*3, '#', true)
+    painter.rect(painter.w//8*7, painter.h//8*7, painter.w//8*5, painter.h//8*5, '#', true)
     true
   end
 end
