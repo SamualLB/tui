@@ -14,7 +14,7 @@ end
 class SplitChild1 < TUI::Widget
   def paint(painter : TUI::Painter)
     TUI::Border::Rounded.new.paint(painter)
-    painter[1, 0] = "Child 1"
+    painter[1, 0] = "Rounded Borders"
     painter[1, 1] = "Dimensions: #{painter.w}x#{painter.h}"
     painter.pop
     true
@@ -24,8 +24,8 @@ end
 class SplitChild2 < TUI::Widget
   def paint(painter : TUI::Painter)
     TUI::Border::Squared.new.paint(painter)
-    painter[1, 1] = "Child 2"
-    painter[1, 2] = "Dimensions: #{painter.w}x#{painter.h}"
+    painter[1, 0] = "Squared Borders"
+    painter[1, 1] = "Dimensions: #{painter.w}x#{painter.h}"
     painter.pop
     true
   end
