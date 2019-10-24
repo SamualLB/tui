@@ -5,6 +5,7 @@ abstract class TUI::Widget
 
   setter layout : Layout?
   setter app : Application?
+  setter border : Border?
 
   property focused : Bool = false
 
@@ -34,6 +35,10 @@ abstract class TUI::Widget
     @layout ||= Layout::Horizontal.new(self)
   end
 
+  def border : Border
+    @border ||= Border::None.new
+  end
+
   def parent! : Widget
     @parent.not_nil!
   end
@@ -61,12 +66,14 @@ abstract class TUI::Widget
   end
 
   def handle(event : Event::Draw) : Bool
+    border.paint(event.painter)
     return false unless paint(event.painter)
     layout.each_widget do |child|
       event.painter.push(child.x, child.y, child.w, child.h)
       return false unless child.handle(event)
       event.painter.pop
     end
+    event.painter.pop
     true
   end
 
