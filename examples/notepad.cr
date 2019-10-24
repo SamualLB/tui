@@ -1,6 +1,6 @@
 require "../src/tui"
 
-class Notepad < TUI::Window
+class Notepad < TUI::Widget
   @buffer = IO::Memory.new
   @mode = Mode::Command
 

@@ -1,6 +1,6 @@
 require "../src/tui"
 
-class Split < TUI::Window
+class Split < TUI::Widget
   def initialize
     @layout = TUI::Layout::Vertical.new(self)
     super
@@ -11,7 +11,7 @@ class Split < TUI::Window
   end
 end
 
-class SplitChild1 < TUI::Window
+class SplitChild1 < TUI::Widget
   def paint(painter : TUI::Painter)
     painter[1, 1] = "Child 1"
     painter[1, 2] = "Dimensions: #{painter.w}x#{painter.h}"
@@ -25,7 +25,7 @@ class SplitChild1 < TUI::Window
   end
 end
 
-class SplitChild2 < TUI::Window
+class SplitChild2 < TUI::Widget
   def paint(painter : TUI::Painter)
     painter[1, 1] = "Child 2"
     painter[1, 2] = "Dimensions: #{painter.w}x#{painter.h}"

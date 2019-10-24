@@ -1,5 +1,5 @@
 class TUI::Layout::Menu < TUI::Layout
-    @items = [] of TUI::Window::MenuItem
+    @items = [] of TUI::Widget::MenuItem
 
     def set(event, rect)
       return if @items.empty?
@@ -11,20 +11,20 @@ class TUI::Layout::Menu < TUI::Layout
       end
     end
 
-    def <<(item : Window)
+    def <<(item : Widget)
       raise "#{self} can only store MenuItems"
     end
 
-    def <<(item : Window::MenuItem)
+    def <<(item : Widget::MenuItem)
       delete(item)
       @items << item
     end
 
-    def delete(item : Window)
+    def delete(item : Widget)
       @items.delete(item)
     end
 
-    def each_window(&block)
+    def each_widget(&block)
       @items.each { |i| yield i }
     end
    

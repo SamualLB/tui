@@ -1,6 +1,6 @@
 require "../src/tui"
 
-class StackChild1 < TUI::Window
+class StackChild1 < TUI::Widget
   def paint(painter : TUI::Painter)
     painter[0, 0] = "Child 1"
     painter[0, 1] = "Dimensions: #{painter.w}x#{painter.h}"
@@ -8,8 +8,8 @@ class StackChild1 < TUI::Window
   end
 end
 
-class StackChild2 < TUI::Window
-  def initialize(parent : TUI::Window)
+class StackChild2 < TUI::Widget
+  def initialize(parent : TUI::Widget)
     super
     bind('a') do |e|
       TUI.logger.info "#{self} caught 'a' binding"
@@ -25,7 +25,7 @@ class StackChild2 < TUI::Window
   end
 end
 
-win = TUI::Window::Stacked.new
+win = TUI::Widget::Stacked.new
 win.bind('q') do
   TUI.logger.info "Exiting"
   win.app.stop = true
@@ -39,7 +39,7 @@ child_2 = StackChild2.new(win)
 app = TUI::Application.new(win, TUI::Backend::NCurses, child_2, fps: 2.5, title: "Stack Test")
 
 app.callback(2.5.seconds) do
-  app.@window.as(TUI::Window::Stacked).layout.index = 1
+  app.@widget.as(TUI::Widget::Stacked).layout.index = 1
 end
 
 app.exec

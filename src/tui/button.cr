@@ -1,11 +1,11 @@
-require "./window"
-require "./window/menu_item"
+require "./widget"
+require "./widget/menu_item"
 
-class TUI::Button < TUI::Window::MenuItem
+class TUI::Button < TUI::Widget::MenuItem
   property label : String?
   property activated : Proc(Nil)
 
-  def initialize(parent : Window? = nil, lab = "Unset Label", &block)
+  def initialize(parent : Widget? = nil, lab = "Unset Label", &block)
     super(parent, lab)
     @activated = block
     bind MouseStatus::PrimaryClick do |e|

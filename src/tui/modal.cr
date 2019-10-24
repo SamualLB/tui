@@ -1,6 +1,6 @@
-require "./window"
+require "./widget"
 
-abstract class TUI::Modal < TUI::Window
+abstract class TUI::Modal < TUI::Widget
   include EventLoop
 
   def initialize(@app : Application)

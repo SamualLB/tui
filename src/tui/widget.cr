@@ -1,7 +1,7 @@
-abstract class TUI::Window
+abstract class TUI::Widget
   property! rect : Rect
 
-  getter parent : Window?
+  getter parent : Widget?
 
   setter layout : Layout?
   setter app : Application?
@@ -34,7 +34,7 @@ abstract class TUI::Window
     @layout ||= Layout::Horizontal.new(self)
   end
 
-  def parent! : Window
+  def parent! : Widget
     @parent.not_nil!
   end
 
@@ -43,7 +43,7 @@ abstract class TUI::Window
     new_parent.layout << self if new_parent
   end
 
-  def <<(win : Window)
+  def <<(win : Widget)
     layout << win
   end
 
@@ -62,7 +62,7 @@ abstract class TUI::Window
 
   def handle(event : Event::Draw) : Bool
     return false unless paint(event.painter)
-    layout.each_window do |child|
+    layout.each_widget do |child|
       event.painter.push(child.x, child.y, child.w, child.h)
       return false unless child.handle(event)
       event.painter.pop
@@ -151,4 +151,4 @@ abstract class TUI::Window
   delegate x, y, w, h, to: rect
 end
 
-require "./window/*"
+require "./widget/*"

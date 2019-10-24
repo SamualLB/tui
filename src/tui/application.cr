@@ -6,24 +6,24 @@ class TUI::Application
 
   property fps : Int32 | Float64
   getter previous_draw : Time::Span = 0.seconds
-  @parent_stack = [] of Window
+  @parent_stack = [] of Widget
   @backend : Backend
-  @window : Window
+  @widget : Widget
   @callbacks = Deque({start: Time::Span, run: Time::Span, proc: Proc(Nil)}).new
 
-  getter focused : Window?
+  getter focused : Widget?
 
-  def initialize(main_window : Class | Window, backend : Backend | Class | Nil = nil,first_focus : Window? = nil , *, @fps = 5, title : String? = nil)
-    @window = case main_window
-    when Window then main_window
-    else             main_window.new
+  def initialize(main_widget : Class | Widget, backend : Backend | Class | Nil = nil,first_focus : Widget? = nil , *, @fps = 5, title : String? = nil)
+    @widget = case main_widget
+    when Widget then main_widget
+    else             main_widget.new
     end
     @backend = case backend
     when Backend then backend
     when Class   then backend.new
     else              Backend::DEFAULT.new
     end
-    @window.app = self
+    @widget.app = self
     first_focus.set_focused(true) if first_focus
     self.title = title if title
   end
@@ -51,32 +51,32 @@ class TUI::Application
     true
   end
 
-  # Create a draw event and disperse it to the main window
-  # to go down the window tree
+  # Create a draw event and disperse it to the main widget
+  # to go down the widget tree
   protected def dispatch_draw
     event_time = Time.monotonic
     painter.clear
     event = Event::Draw.new(painter, @previous_draw - event_time)
-    raise "redraw error!" unless @window.handle(event)
+    raise "redraw error!" unless @widget.handle(event)
     @backend.clear
     @backend.paint(painter)
     @previous_draw = event_time
   end
 
-  # Pass to the currently focused window, which will then
+  # Pass to the currently focused widget, which will then
   # bubble the event up until it is consumed or reaches the
   # top of the tree
   private def dispatch_key(event : Event::Key)
     unless focus = focused
-      focus = @window
-      TUI.logger.info "No window focused for key event, using top-level #{focus}"
+      focus = @widget
+      TUI.logger.info "No widget focused for key event, using top-level #{focus}"
     end
     unless focus.handle(event)
       TUI.logger.info "Unhandled key event #{event}, sent to #{focus}"
     end
   end
 
-  # Find the window the event takes place in and pass it,
+  # Find the widget the event takes place in and pass it,
   # which wil then bubble the event up until it is
   # consumed or reaches the top of the tree
   #
@@ -84,28 +84,28 @@ class TUI::Application
   # if the mouse moves from when it was pressed to where it is
   # released
   private def dispatch_mouse(event : Event::Mouse)
-    # find containing window that is lowest down the tree,
-    # store in cur_window
-    cur_window = @window
+    # find containing widget that is lowest down the tree,
+    # store in cur_widget
+    cur_widget = @widget
     loop do
-      parent_window = cur_window
-      break if cur_window.block_mouse_events?
-      cur_window.layout.each_window do |child|
+      parent_widget = cur_widget
+      break if cur_widget.block_mouse_events?
+      cur_widget.layout.each_widget do |child|
         if child.contains(event)
-          cur_window = child
+          cur_widget = child
           break
         end
       end
-      break if parent_window == cur_window # no child contains, parent only
+      break if parent_widget == cur_widget # no child contains, parent only
     end
-    unless cur_window.handle(event)
-      TUI.logger.info "Unhandled mouse event #{event}, sent to: #{cur_window}"
+    unless cur_widget.handle(event)
+      TUI.logger.info "Unhandled mouse event #{event}, sent to: #{cur_widget}"
     end
   end
 
   def dispatch_resize(event : Event::Resize)
     painter.resize(event.width, event.height)
-    raise "resize error!" unless @window.handle(event)
+    raise "resize error!" unless @widget.handle(event)
   end
 
   def dispatch_resize
@@ -129,22 +129,22 @@ class TUI::Application
     false
   end
 
-  def reparent(new_parent : Window)
-    old_parent = @window
+  def reparent(new_parent : Widget)
+    old_parent = @widet
     old_parent.parent = new_parent
     new_parent.parent = nil
     new_parent.app = self
     new_parent << old_parent
-    @window = new_parent
+    @widget = new_parent
     @parent_stack.push old_parent
   end
 
   def deparent
-    old_parent = @window
+    old_parent = @widget
     new_parent = @parent_stack.pop
     new_parent.parent = nil
     old_parent.layout.delete(new_parent)
-    @window = new_parent
+    @widget = new_parent
   end
 
   protected def painter : Painter
@@ -156,11 +156,11 @@ class TUI::Application
     self
   end
 
-  def focused! : Window
+  def focused! : Widget
     @focused.not_nil!
   end
 
-  def focused=(win : Window?)
+  def focused=(win : Widget?)
     return if win == focused
     old_focus = focused
     @focused = win

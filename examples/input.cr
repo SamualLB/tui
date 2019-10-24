@@ -1,9 +1,9 @@
 require "../src/tui"
 
-class Input < TUI::Window
+class Input < TUI::Widget
   @prev_input : TUI::Event? = nil
 
-  def initialize(parent : TUI::Window? = nil)
+  def initialize(parent : TUI::Widget? = nil)
     super
     bind('q') do
       TUI.logger.info "Exiting"

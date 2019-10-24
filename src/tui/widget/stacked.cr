@@ -1,6 +1,6 @@
-# Helper window for the Stacked layout
-class TUI::Window::Stacked < TUI::Window
-  def initialize(parent : Window? = nil)
+# Helper widget for the Stacked layout
+class TUI::Widget::Stacked < TUI::Widget
+  def initialize(parent : Widget? = nil)
     super
     @layout = Layout::Stacked.new(self)
   end
@@ -12,7 +12,7 @@ class TUI::Window::Stacked < TUI::Window
   def layout=(l)
     unless l.is_a?(Layout::Stacked)
       raise ArgumentError.new(
-        "Stacked window layout can only by Layout::Stacked, not #{l.class}")
+        "Stacked widget layout can only by Layout::Stacked, not #{l.class}")
     end
     @layout = l
   end

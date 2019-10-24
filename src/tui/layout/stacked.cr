@@ -1,11 +1,11 @@
 class TUI::Layout::Stacked < TUI::Layout
   @index : Int32 | Nil = nil
 
-  @windows = [] of Window
+  @widgets = [] of Widget
 
-  # Sets selected window to full screen
+  # Sets selected widget to full screen
   def set(event, rect)
-    @windows.each_with_index do |win, i|
+    @widgets.each_with_index do |win, i|
       if i == @index
         win.rect = Rect.new(rect.w, rect.h)
       else
@@ -15,23 +15,23 @@ class TUI::Layout::Stacked < TUI::Layout
     end
   end
 
-  def <<(win : Window)
+  def <<(win : Widget)
     delete(win)
-    @windows << win
-    @index = 0 if @windows.size == 1
+    @widgets << win
+    @index = 0 if @widgets.size == 1
   end
 
-  def delete(win : Window)
-    @windows.delete win
+  def delete(win : Widget)
+    @widgets.delete win
   end
 
-  def top? : Window?
+  def top? : Widget?
     return nil unless i = @index
-    @windows[i]?
+    @widgets[i]?
   end
 
-  def top : Window
-    @windows[@index.as(Int32)]
+  def top : Widget
+    @widgets[@index.as(Int32)]
   end
 
   def index : Int32
@@ -39,14 +39,14 @@ class TUI::Layout::Stacked < TUI::Layout
   end
 
   def index=(i : Int32)
-    unless i < @windows.size && i >= 0
-      raise "invalid stacked layout index #{i}/#{@windows.size-1}"
+    unless i < @widgets.size && i >= 0
+      raise "invalid stacked layout index #{i}/#{@widgets.size-1}"
     end
     @index = i
-    window.app.dispatch_resize
+    widget.app.dispatch_resize
   end
 
-  def each_window(&block)
-    @windows.each { |win| yield win if win.is_a? Window }
+  def each_widget(&block)
+    @widgets.each { |win| yield win if win.is_a? Widget }
   end
 end

@@ -1,6 +1,6 @@
-# Helper window for the Stacked layout
-class TUI::Window::Main < TUI::Window
-  def initialize(parent : Window? = nil)
+# Helper widget for the Stacked layout
+class TUI::Widget::Main < TUI::Widget
+  def initialize(parent : Widget? = nil)
     super
     @layout = Layout::MainWindow.new(self)
   end
@@ -17,7 +17,7 @@ class TUI::Window::Main < TUI::Window
     @layout = l
   end
 
-  def <<(win : Window)
+  def <<(win : Widget)
   end
 
   delegate :top=, :bottom=, to: layout

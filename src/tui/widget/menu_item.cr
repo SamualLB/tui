@@ -1,7 +1,7 @@
-class TUI::Window::MenuItem < TUI::Window
+class TUI::Widget::MenuItem < TUI::Widget
   property label : String?
 
-  def initialize(parent : Window? = nil, @label = nil)
+  def initialize(parent : Widget? = nil, @label = nil)
     super(parent)
   end
 

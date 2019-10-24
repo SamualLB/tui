@@ -1,8 +1,8 @@
 class TUI::Layout::Vertical < TUI::Layout
 
-  @items = [] of Window
+  @items = [] of Widget
 
-  # Very basic, lays out each Window with height/no. of window as the height
+  # Very basic, lays out each Widget with height/no. of widget as the height
   # and full width
   def set(event, rect : Rect)
     return if @items.empty?
@@ -14,20 +14,20 @@ class TUI::Layout::Vertical < TUI::Layout
         height_for_each * i,
         rect.w,
         item == @items.last ? height_for_last : height_for_each)
-      item.handle(event) if item.is_a?(Window)
+      item.handle(event) if item.is_a?(Widget)
     end
   end
 
-  def <<(win : Window)
+  def <<(win : Widget)
     delete(win)
     @items << win
   end
 
-  def delete(win : Window)
+  def delete(win : Widget)
     @items.delete win
   end
 
-  def each_window(&block)
-    @items.each { |item| yield item if item.is_a? Window }
+  def each_widget(&block)
+    @items.each { |item| yield item if item.is_a? Widget }
   end
 end

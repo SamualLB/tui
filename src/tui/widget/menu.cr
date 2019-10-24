@@ -1,5 +1,5 @@
-class TUI::Window::Menu < TUI::Window
-  def initialize(parent : Window? = nil)
+class TUI::Widget::Menu < TUI::Widget
+  def initialize(parent : Widget? = nil)
     super
     @layout = Layout::Menu.new(self)
   end

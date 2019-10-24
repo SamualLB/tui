@@ -1,7 +1,7 @@
 require "../src/tui"
 
-class RectDrawer < TUI::Window
-  def initialize(parent : TUI::Window? = nil)
+class RectDrawer < TUI::Widget
+  def initialize(parent : TUI::Widget? = nil)
     super
     bind 'q' { app.stop = true; true }
   end
