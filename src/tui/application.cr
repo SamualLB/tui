@@ -105,7 +105,6 @@ class TUI::Application
 
   def dispatch_resize(event : Event::Resize)
     painter.resize(event.width, event.height)
-    TUI.logger.info "Dispatching resize: #{event}"
     raise "resize error!" unless @window.handle(event)
   end
 
