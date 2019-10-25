@@ -12,21 +12,33 @@ class BorderTest < TUI::Widget
 end
 
 class SplitChild1 < TUI::Widget
+  def initialize(par : TUI::Widget? = nil)
+    super(par)
+    @border = TUI::Border::Rounded.new
+  end
+
   def paint(painter : TUI::Painter)
-    TUI::Border::Rounded.new.paint(painter)
     painter[1, 0] = "Rounded Borders"
     painter[1, 1] = "Dimensions: #{painter.w}x#{painter.h}"
-    painter.pop
     true
   end
 end
 
 class SplitChild2 < TUI::Widget
+  def initialize(par : TUI::Widget? = nil)
+    super(par)
+    @border = TUI::Border::Custom.new do |painter|
+      painter[0, 0] = '/'
+      painter[-1, -1] = '/'
+      painter[0, -1] = '\\'
+      painter[-1, 0] = '\\'
+      painter.push(1, 1)
+    end
+  end
+
   def paint(painter : TUI::Painter)
-    TUI::Border::Squared.new.paint(painter)
-    painter[1, 0] = "Squared Borders"
+    painter[1, 0] = "Custom Borders"
     painter[1, 1] = "Dimensions: #{painter.w}x#{painter.h}"
-    painter.pop
     true
   end
 end
