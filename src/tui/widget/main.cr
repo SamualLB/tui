@@ -3,6 +3,10 @@ class TUI::Widget::Main < TUI::Widget
   def initialize(parent : Widget? = nil)
     super
     @layout = Layout::MainWindow.new(self)
+    bind('q') do
+      app.stop = true
+      true
+    end
   end
 
   def layout : Layout::MainWindow
