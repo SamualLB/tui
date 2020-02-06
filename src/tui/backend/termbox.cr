@@ -1,6 +1,10 @@
 require "lib_termbox"
 
 class TUI::Backend::Termbox < TUI::Backend
+  def initialize
+    create_input_channel
+  end
+
   def start : self
     raise "TUI Backend already active" if @started
     case LibTermbox.init
@@ -43,28 +47,30 @@ class TUI::Backend::Termbox < TUI::Backend
     self
   end
 
-  def poll(timeout : Int32 | Bool = false) : TUI::Event?
-    event = uninitialized LibTermbox::Event
-    type = case timeout
-    when Int32 then LibTermbox.peek_event(pointerof(event), timeout)
-    else # Bool
-      if timeout
-        LibTermbox.poll_event(pointerof(event))
-      else
-        LibTermbox.peek_event(pointerof(event), 0)
-      end
-    end
-    return nil if type < 1
-    case LibTermbox::EventType.new(event.type)
+  private def parse_event(ev : LibTermbox::Event) : TUI::Event?
+    case LibTermbox::EventType.new(ev.type)
     when LibTermbox::EventType::Key then
-      map_key(event.key, event.ch, event.mod)
+      map_key(ev.key, ev.ch, ev.mod)
     when LibTermbox::EventType::Resize then
-      TUI::Event::Resize.new({event.w, event.h})
+      TUI::Event::Resize.new({ev.w, ev.h})
     when LibTermbox::EventType::Mouse then
       mse = TUI::Event::Mouse.new
-      return nil unless btn = map_mouse(event.key)
-      TUI::Event::Mouse.new(btn, {event.x, event.y})
-    else return nil
+      return nil unless btn = map_mouse(ev.key)
+      TUI::Event::Mouse.new(btn, {ev.x, ev.y})
+    else raise "Unknown Termbox event #{ev.type}"
+    end
+  end
+
+  private def create_input_channel
+    spawn do
+      loop do
+        event_type = LibTermbox.poll_event(out event)
+        next if event_type <= 0 # Ignore error events
+        parsed = parse_event(event)
+        next unless parsed # Ignore invalid event attributes
+        channel.send(parsed)
+        Fiber.yield # Prevents buffering when running on a single thread
+      end
     end
   end
 

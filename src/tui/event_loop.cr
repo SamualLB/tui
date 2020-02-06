@@ -9,13 +9,9 @@ module TUI::EventLoop
     @start_time = Time.monotonic
     app.dispatch_resize
     loop do
-      while Time.monotonic < (app.previous_draw + (1.0 / app.fps).seconds)
-        handled = false
-        handled = true if app.check_callbacks
-        handled = true if app.dispatch(app.poll)
-        sleep(app.previous_draw + (1.0 / app.fps).seconds - Time.monotonic) unless handled
-      end
       app.dispatch_draw
+      ev = app.channel.receive
+      app.dispatch ev
       break if @stop
     end
   rescue ex

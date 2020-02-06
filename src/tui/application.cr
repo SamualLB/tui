@@ -130,7 +130,7 @@ class TUI::Application
   end
 
   def reparent(new_parent : Widget)
-    old_parent = @widet
+    old_parent = @widget
     old_parent.parent = new_parent
     new_parent.parent = nil
     new_parent.app = self
@@ -170,5 +170,5 @@ class TUI::Application
   end
 
   delegate :title=, to: @backend
-  delegate :poll, to: @backend
+  delegate :channel, to: @backend
 end

@@ -4,6 +4,10 @@ class TUI::Backend::NCurses < TUI::Backend
   ERR = -1
   OK = 0
 
+  def initialize
+    create_input_channel
+  end
+
   def start : self
     raise "TUI Backend already active" if @started
     ::NCurses.start
@@ -11,6 +15,7 @@ class TUI::Backend::NCurses < TUI::Backend
     ::NCurses.set_cursor ::NCurses::Cursor::Invisible
     ::NCurses.keypad true
     ::NCurses.mouse_mask(::NCurses::Mouse::All)
+    ::NCurses.stdscr.timeout = -1
     @started = true
     self
   end
@@ -45,21 +50,29 @@ class TUI::Backend::NCurses < TUI::Backend
     self
   end
 
-  def poll(timeout : Int32 | Bool = false) : TUI::Event?
-    case timeout
-    when false then ::NCurses.stdscr.timeout = 0
-    when true  then ::NCurses.no_timeout
-    when Int32 then ::NCurses.stdscr.timeout = timeout
-    end
-    return nil unless event = ::NCurses.get_char
-    case event
+  private def parse_event(ev : ::NCurses::Key | Char | Nil) : TUI::Event?
+    return nil if ev.nil?
+    case ev
     when ::NCurses::Key::Mouse then
       return nil if (LibNCurses.getmouse(out mouse)) == ERR
-      return map_mouse(::NCurses::MouseEvent.new(mouse))
+      map_mouse(::NCurses::MouseEvent.new(mouse))
     when ::NCurses::Key::Resize then
       TUI::Event::Resize.new({width, height})
     else
-      return map_key(event)
+      map_key(ev)
+    end
+
+  end
+
+  private def create_input_channel
+    spawn do
+      loop do
+        ev = parse_event(::NCurses.get_char)
+        next unless ev
+        TUI.logger.debug "Sending event #{ev}"
+        channel.send(ev)
+        Fiber.yield # Prevents buffering when running on a single thread
+      end
     end
   end
 
@@ -137,7 +150,7 @@ class TUI::Backend::NCurses < TUI::Backend
     outp
   end
 
-  private def convert_mouse_state(i : ::NCurses::Mouse) : TUI::MouseStatus
+  private def convert_mouse_state(i : ::NCurses::Mouse) : TUI::MouseStatus | Char
     case i
     when ::NCurses::Mouse::B1Released then TUI::MouseStatus::PrimaryRelease
     when ::NCurses::Mouse::B1Pressed  then TUI::MouseStatus::PrimaryPress
@@ -159,6 +172,13 @@ class TUI::Backend::NCurses < TUI::Backend
 
     when ::NCurses::Mouse::B4Pressed then TUI::MouseStatus::ScrollUp
     when ::NCurses::Mouse::B5Pressed then TUI::MouseStatus::ScrollDown
+
+    when ::NCurses::Mouse::Ctrl,
+         ::NCurses::Mouse::Shift,
+         ::NCurses::Mouse::Alt
+    TUI.logger.info "Mouse modifier: #{i}"
+    TUI::MouseStatus::None
+
     else
       TUI.logger.info "Unknown NCurses mouse state: #{i}"
       TUI::MouseStatus::None
