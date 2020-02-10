@@ -4,7 +4,8 @@ abstract class TUI::Backend
   DEFAULT = NCurses
 
   getter started = false
-  getter channel = Channel(TUI::Event).new
+  
+  @channel = Channel(TUI::Event).new
 
   abstract def start : self
 
@@ -19,6 +20,10 @@ abstract class TUI::Backend
   abstract def refresh : self
 
   abstract def clear : self
+
+  def poll : TUI::Event
+    @channel.receive
+  end
 
   def paint(painter : TUI::Painter)
     painter.h.times do |h|

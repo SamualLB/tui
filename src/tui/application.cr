@@ -170,5 +170,5 @@ class TUI::Application
   end
 
   delegate :title=, to: @backend
-  delegate :channel, to: @backend
+  delegate :poll, to: @backend
 end

@@ -63,12 +63,12 @@ class TUI::Backend::Termbox < TUI::Backend
 
   private def create_input_channel
     spawn do
-      loop do
+      until @channel.closed?
         event_type = LibTermbox.poll_event(out event)
         next if event_type <= 0 # Ignore error events
         parsed = parse_event(event)
         next unless parsed # Ignore invalid event attributes
-        channel.send(parsed)
+        @channel.send(parsed)
         Fiber.yield # Prevents buffering when running on a single thread
       end
     end

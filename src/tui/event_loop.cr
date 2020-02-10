@@ -10,7 +10,7 @@ module TUI::EventLoop
     app.dispatch_resize
     loop do
       app.dispatch_draw
-      ev = app.channel.receive
+      ev = app.poll
       app.dispatch ev
       break if @stop
     end

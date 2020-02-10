@@ -19,4 +19,6 @@ enum TUI::MouseStatus
   SecondaryTripleClick
   SecondaryPress
   SecondaryRelease
+
+  Position
 end

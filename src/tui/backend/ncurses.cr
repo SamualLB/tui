@@ -14,7 +14,8 @@ class TUI::Backend::NCurses < TUI::Backend
     ::NCurses.no_echo
     ::NCurses.set_cursor ::NCurses::Cursor::Invisible
     ::NCurses.keypad true
-    ::NCurses.mouse_mask(::NCurses::Mouse::All)
+    ::NCurses.mouse_mask(::NCurses::Mouse::All | ::NCurses::Mouse::Position)
+    puts "\033[?1003h"
     ::NCurses.stdscr.timeout = -1
     @started = true
     self
@@ -22,6 +23,7 @@ class TUI::Backend::NCurses < TUI::Backend
 
   def stop : self
     raise "TUI Backend not active" unless @started
+    puts "\033[?1003l"
     ::NCurses.end
     @started = false
     self
@@ -53,24 +55,22 @@ class TUI::Backend::NCurses < TUI::Backend
   private def parse_event(ev : ::NCurses::Key | Char | Nil) : TUI::Event?
     return nil if ev.nil?
     case ev
-    when ::NCurses::Key::Mouse then
+    when ::NCurses::Key::Mouse
       return nil if (LibNCurses.getmouse(out mouse)) == ERR
       map_mouse(::NCurses::MouseEvent.new(mouse))
-    when ::NCurses::Key::Resize then
+    when ::NCurses::Key::Resize
       TUI::Event::Resize.new({width, height})
     else
       map_key(ev)
     end
-
   end
 
   private def create_input_channel
     spawn do
-      loop do
+      until @channel.closed?
         ev = parse_event(::NCurses.get_char)
         next unless ev
-        TUI.logger.debug "Sending event #{ev}"
-        channel.send(ev)
+        @channel.send(ev)
         Fiber.yield # Prevents buffering when running on a single thread
       end
     end
@@ -178,6 +178,8 @@ class TUI::Backend::NCurses < TUI::Backend
          ::NCurses::Mouse::Alt
     TUI.logger.info "Mouse modifier: #{i}"
     TUI::MouseStatus::None
+
+    when ::NCurses::Mouse::Position then TUI::MouseStatus::Position
 
     else
       TUI.logger.info "Unknown NCurses mouse state: #{i}"
