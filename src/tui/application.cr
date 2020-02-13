@@ -4,16 +4,14 @@ require "./event_loop"
 class TUI::Application
   include EventLoop
 
-  property fps : Int32 | Float64
-  getter previous_draw : Time::Span = 0.seconds
+  @previous_draw : Time::Span = 0.seconds
   @parent_stack = [] of Widget
   @backend : Backend
   @widget : Widget
-  @callbacks = Deque({start: Time::Span, run: Time::Span, proc: Proc(Nil)}).new
 
   getter focused : Widget?
 
-  def initialize(main_widget : Class | Widget, backend : Backend | Class | Nil = nil,first_focus : Widget? = nil , *, @fps = 5, title : String? = nil)
+  def initialize(main_widget : Class | Widget, backend : Backend | Class | Nil = nil,first_focus : Widget? = nil , *, title : String? = nil)
     @widget = case main_widget
     when Widget then main_widget
     else             main_widget.new
@@ -110,23 +108,6 @@ class TUI::Application
 
   def dispatch_resize
     dispatch_resize Event::Resize.new(@backend.width, @backend.height)
-  end
-
-  def callback(span : Time::Span, &block : Proc(Nil)) : self
-    call_time = Time.monotonic
-    @callbacks << {start: call_time, run: call_time + span, proc: block}
-    self
-  end
-
-  def check_callbacks : Bool
-    cur_time = Time.monotonic
-    @callbacks.each do |tup|
-      next unless cur_time >= tup[:run]
-      @callbacks.delete(tup)
-      tup[:proc].call
-      return true
-    end
-    false
   end
 
   def reparent(new_parent : Widget)
