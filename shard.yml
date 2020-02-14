@@ -16,5 +16,7 @@ development_dependencies:
     github: SamualLB/ncurses
   lib_termbox:
     github: SamualLB/lib_termbox
+  char_width:
+    github: SamualLB/char_width
 
 license: MIT

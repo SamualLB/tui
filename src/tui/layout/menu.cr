@@ -5,7 +5,7 @@ class TUI::Layout::Menu < TUI::Layout
       return if @items.empty?
       offset = 0
       @items.each do |item|
-        item.rect = Rect.new(offset, 0, item.label_width, 1)
+        item.rect = Rect.new(offset, 0, item.width, 1)
         item.handle(event)
         offset += item.w + 1
       end

@@ -10,9 +10,8 @@ class TUI::Widget::MenuItem < TUI::Widget
     true
   end
 
-  def label_width : Int32
-    label.try { |l| return l.bytesize }
-    0
+  def width : Int32
+    (l = label) ? l.width : 0
   end
 
   def to_s(io : IO)
