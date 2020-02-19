@@ -5,8 +5,15 @@ class Notepad < TUI::Widget
   @mode = Mode::Command
 
   def paint(painter : TUI::Painter)
-    painter[0, 0] = "Mode: #{@mode}"
-    painter[0, 1] = @buffer.to_s
+    painter[0, 0] = "Notepad!"
+    painter[0, 1] = "#{@mode} mode:"
+    case @mode
+    when Mode::Insert then painter[15, 1] = "Press escape to exit insert mode"
+    when Mode::Command
+      painter[10, 0] = "Press q to exit"
+      painter[15, 1] = "Press i to enter insert mode"
+    end
+    painter[0, 2] = @buffer.to_s
     true
   end
 
@@ -22,7 +29,7 @@ class Notepad < TUI::Widget
     when Mode::Command
       case event.key
       when 'i' then @mode = Mode::Insert
-      when 'q' then app.stop = true
+      when 'q' then app.stop
       end
     end
     true
@@ -36,7 +43,7 @@ end
 
 win = Notepad.new
 
-app = TUI::Application.new(win, TUI::Backend::NCurses, fps: 2.5, title: "Notepad")
+app = TUI::Application.new(win, TUI::Backend::NCurses, title: "Notepad")
 
 win.set_focused true
 

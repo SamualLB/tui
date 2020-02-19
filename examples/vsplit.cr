@@ -5,8 +5,8 @@ class Split < TUI::Widget
     @layout = TUI::Layout::Vertical.new(self)
     super
     bind('q') do
-      TUI.logger.info "Exiting"
-      app.stop = true
+      app.stop
+      true
     end
   end
 end
@@ -35,6 +35,7 @@ class SplitChild2 < TUI::Widget
     painter[-1, -1] = '╯'
     painter[-1, 0] = '╮'
     painter[0, -1] = '╰'
+    painter.centre(painter.w//2, painter.h-2, "Press q to exit example")
     true
   end
 end
@@ -44,6 +45,6 @@ SplitChild1.new(win)
 SplitChild2.new(win)
 
 
-app = TUI::Application.new(win, TUI::Backend::NCurses, fps: 2.5, title: "Vertical Split")
+app = TUI::Application.new(win, TUI::Backend::NCurses, title: "Vertical Split")
 
 app.exec
