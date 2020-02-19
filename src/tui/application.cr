@@ -10,6 +10,7 @@ class TUI::Application
   @widget : Widget
 
   getter focused : Widget?
+  getter hover : Widget?
 
   def initialize(main_widget : Class | Widget, backend : Backend | Class | Nil = nil,first_focus : Widget? = nil , *, title : String? = nil)
     @widget = case main_widget
@@ -51,12 +52,12 @@ class TUI::Application
 
   # Create a draw event and disperse it to the main widget
   # to go down the widget tree
-  protected def dispatch_draw
+  def dispatch_draw
     event_time = Time.monotonic
     painter.clear
     event = Event::Draw.new(painter, @previous_draw - event_time)
     raise "redraw error!" unless @widget.handle(event)
-    @backend.clear
+    #@backend.clear
     @backend.paint(painter)
     @previous_draw = event_time
   end
@@ -87,16 +88,15 @@ class TUI::Application
     cur_widget = @widget
     loop do
       parent_widget = cur_widget
-      break if cur_widget.block_mouse_events?
-      cur_widget.layout.each_widget do |child|
-        if child.contains(event)
+      cur_widget.layout.each_widget_mouse do |child|
+        if child.contains?(event)
           cur_widget = child
           break
         end
       end
       break if parent_widget == cur_widget # no child contains, parent only
     end
-    unless cur_widget.handle(event)
+    unless cur_widget.handle(event) || event.mouse == TUI::MouseStatus::Position
       TUI.logger.info "Unhandled mouse event #{event}, sent to: #{cur_widget}"
     end
   end
@@ -126,6 +126,7 @@ class TUI::Application
     new_parent.parent = nil
     old_parent.layout.delete(new_parent)
     @widget = new_parent
+    @widget.dirty = true
   end
 
   protected def painter : Painter
@@ -141,13 +142,32 @@ class TUI::Application
     @focused.not_nil!
   end
 
-  def focused=(win : Widget?)
-    return if win == focused
+  def focused=(w : Widget?)
+    return if w == focused
     old_focus = focused
-    @focused = win
-    win.try &.focused = true
+    @focused = w
+    w.try &.focused = true
     old_focus.try &.focused = false
     TUI.logger.info "Set new focus: #{@focused}"
+  end
+
+  def hover! : Widget
+    @hover.not_nil!
+  end
+
+  def hover=(w : Widget?)
+    return if w == hover
+    old_hover = hover
+    @hover = w
+    if w && w.hover.nil?
+      raise ArgumentError.new "Widget does not have hover coordinates"
+    end
+    old_hover.try &.hover = nil
+    TUI.logger.info "Set new hover: #{@hover}"
+  end
+
+  def dirty? : Bool
+    @widget.dirty?
   end
 
   delegate :title=, to: @backend

@@ -18,6 +18,7 @@ class TUI::Widget::Stacked < TUI::Widget
   end
 
   def index=(i : Int32)
+    self.dirty = true if i != layout.index
     layout.index = i
   end
 

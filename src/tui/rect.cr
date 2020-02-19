@@ -26,4 +26,8 @@ struct TUI::Rect
       Math.max(0, Math.min(e, w-i)),
       Math.max(0, Math.min(r, y-j)))
   end
+
+  def contains?(i : Int32, j : Int32) : Bool
+    i >= x && j >= y && i < x+w && j < y+h
+  end
 end

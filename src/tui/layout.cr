@@ -16,6 +16,13 @@ abstract class TUI::Layout
     each_widget { |w| w.parent =  widget unless w.parent}
   end
 
+  # Yield each widget that is mouse accessible
+  #
+  # Overriden to stop mouse presses for modals
+  def each_widget_mouse(&block : Widget -> Nil)
+    each_widget { |w| yield w }
+  end
+
   # Add a widget with default values at least
   abstract def <<(win : Widget)
 

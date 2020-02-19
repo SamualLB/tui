@@ -4,7 +4,7 @@ class TUI::Widget::Main < TUI::Widget
     super
     @layout = Layout::MainWindow.new(self)
     bind('q') do
-      app.stop = true
+      app.stop
       true
     end
   end

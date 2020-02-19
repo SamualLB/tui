@@ -12,7 +12,7 @@ class TUI::Widget::TextEditor < TUI::Widget
     @line_buffer << "Default text"
     @cur_pos = {5, 0}
     unbind 'q'
-    bind(Key::Escape) { app.stop = true }
+    bind(Key::Escape) { app.stop; true }
   end
 
   private def cur_line : String

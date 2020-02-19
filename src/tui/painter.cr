@@ -5,7 +5,7 @@
 #
 # Use `#pop` after drawing
 class TUI::Painter
-  @surface : Array(Array(Cell))
+  getter surface : Array(Array(Cell))
 
   # Current rect
   @current_rect : Rect
@@ -36,6 +36,15 @@ class TUI::Painter
     @surface = Array.new(w) { Array.new(h) { Cell.new } }
     @stack.clear
     self
+  end
+
+  def diff(old : Array(Array(Cell))? = nil, &block) : Bool
+    return false unless old
+    return false if old.size != surface.size || old[0].size != surface[0].size
+    each_with_index do |cell, i, j|
+      yield cell, i, j if cell != old[i][j]
+    end
+    true
   end
 
   # Push new offsets onto stack
@@ -75,6 +84,15 @@ class TUI::Painter
 
   def clear : self
     each_index { |i, j| self[i, j] = Cell.new }
+    self
+  end
+
+  def clear(rect) : self
+    (rect.x...(rect.x+rect.w)).each do |i|
+      (rect.y...(rect.y+rect.h)).each do |j|
+        self[i, j] = Cell.new
+      end
+    end
     self
   end
 
@@ -122,7 +140,7 @@ class TUI::Painter
         next
       end
       self[i+x_extra, j+y_extra] = c
-      x_extra += 1
+      x_extra += c.width
       if x_extra >= width
         x_extra = 0
         y_extra += 1
@@ -140,6 +158,10 @@ class TUI::Painter
 
   def print(i, j, str : String)
     self[i, j] = str
+  end
+
+  def centre(mid, j, str : String)
+    self[mid-str.width//2, j] = str
   end
 
   def to_s(io : IO)
@@ -171,7 +193,6 @@ class TUI::Painter
     end
     self
   end
-
   def vline(x0 : Int32, y0 : Int32, len : Int32, ch : Char = '█', debug = false) : self
     ch = '0' if debug
     until len == 0
@@ -184,6 +205,7 @@ class TUI::Painter
     end
     self
   end
+
 
   def hline(x0 : Int32, y0 : Int32, len : Int32, ch : Char = '█', debug = false) : self
     ch = '0' if debug

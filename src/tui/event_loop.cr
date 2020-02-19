@@ -1,5 +1,5 @@
 module TUI::EventLoop
-  property stop = false
+  @stop = false
 
   getter! start_time : Time::Span
   getter! end_time : Time::Span
@@ -9,7 +9,7 @@ module TUI::EventLoop
     @start_time = Time.monotonic
     app.dispatch_resize
     loop do
-      app.dispatch_draw
+      app.dispatch_draw if app.dirty?
       ev = app.poll
       app.dispatch ev
       break if @stop
@@ -17,6 +17,10 @@ module TUI::EventLoop
   rescue ex
     TUI.logger.fatal "Event loop exec error: #{ex} on #{self}"
     TUI.logger.fatal ex.inspect_with_backtrace
+  end
+
+  def stop
+    @stop = true
   end
 
   abstract def app : Application
