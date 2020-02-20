@@ -148,7 +148,6 @@ class TUI::Application
     @focused = w
     w.try &.focused = true
     old_focus.try &.focused = false
-    TUI.logger.info "Set new focus: #{@focused}"
   end
 
   def hover! : Widget
@@ -163,7 +162,6 @@ class TUI::Application
       raise ArgumentError.new "Widget does not have hover coordinates"
     end
     old_hover.try &.hover = nil
-    TUI.logger.info "Set new hover: #{@hover}"
   end
 
   def dirty? : Bool
