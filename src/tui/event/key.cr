@@ -25,6 +25,10 @@ struct TUI::Event::Key < TUI::Event
     @shift = false
   end
 
+  def initialize(@key, *,  @alt = false, @ctrl = false, @shift = false)
+    super()
+  end
+
   protected def key=(@key : TUI::Key | Char)
   end
 end

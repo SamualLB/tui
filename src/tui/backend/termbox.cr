@@ -77,12 +77,25 @@ class TUI::Backend::Termbox < TUI::Backend
 
   private def map_key(key, ch, mod) : TUI::Event::Key?
     TUI.logger.error "Termbox modifier: #{mod}" unless mod == 0
-    out_event = TUI::Event::Key.new
-    unless ch == 0
-      out_event.key = ch.chr
-      return out_event
+    return TUI::Event::Key.new(ch.chr) unless ch == 0
+
+    out_key = map_key_key(LibTermbox::Key.from_value?(key))
+    if out_key.nil?
+      TUI.logger.info "Unhandled Termbox key #{key} #{LibTermbox::Key.from_value?(key)}, #{ch}"
+      return nil
     end
-    out_event.key = case LibTermbox::Key.from_value?(key)
+    out_mod = map_key_mod(LibTermbox::Key.from_value?(key))
+    case out_mod
+    when nil    then TUI::Event::Key.new(out_key)
+    when :alt   then TUI::Event::Key.new(out_key, alt: true)
+    when :ctrl  then TUI::Event::Key.new(out_key, ctrl: true)
+    when :shift then TUI::Event::Key.new(out_key, shift: true)
+    else raise "Unknown mod state"
+    end
+  end
+
+  private def map_key_key(k : LibTermbox::Key?) : TUI::Key | Char | Nil
+    case k
     when LibTermbox::Key::ArrowUp    then TUI::Key::Up
     when LibTermbox::Key::ArrowDown  then TUI::Key::Down
     when LibTermbox::Key::ArrowLeft  then TUI::Key::Left
@@ -111,15 +124,120 @@ class TUI::Backend::Termbox < TUI::Backend
     when LibTermbox::Key::F11        then TUI::Key::F11
     when LibTermbox::Key::F12        then TUI::Key::F12
     when LibTermbox::Key::Escape     then TUI::Key::Escape
-    when nil then
-      TUI.logger.info "Nil key #{key}: #{key.chr}"
-      key.chr
-    else
-      TUI.logger.info "Unhandled Termbox key #{LibTermbox::Key.from_value(key)}: #{key}"
-      return nil
+    when LibTermbox::Key::CtrlA      then 'a'
+    when LibTermbox::Key::CtrlB      then 'b'
+    when LibTermbox::Key::CtrlC      then 'c'
+    when LibTermbox::Key::CtrlD      then 'd'
+    when LibTermbox::Key::CtrlE      then 'e'
+    when LibTermbox::Key::CtrlF      then 'f'
+    when LibTermbox::Key::CtrlG      then 'g'
+    when LibTermbox::Key::CtrlH      then 'h'
+    when LibTermbox::Key::CtrlI      then 'i'
+    when LibTermbox::Key::CtrlJ      then 'j'
+    when LibTermbox::Key::CtrlK      then 'k'
+    when LibTermbox::Key::CtrlL      then 'l'
+    when LibTermbox::Key::CtrlM      then 'm'
+    when LibTermbox::Key::CtrlN      then 'n'
+    when LibTermbox::Key::CtrlO      then 'o'
+    when LibTermbox::Key::CtrlP      then 'p'
+    when LibTermbox::Key::CtrlQ      then 'q'
+    when LibTermbox::Key::CtrlR      then 'r'
+    when LibTermbox::Key::CtrlS      then 's'
+    when LibTermbox::Key::CtrlT      then 't'
+    when LibTermbox::Key::CtrlU      then 'u'
+    when LibTermbox::Key::CtrlV      then 'v'
+    when LibTermbox::Key::CtrlW      then 'w'
+    when LibTermbox::Key::CtrlX      then 'x'
+    when LibTermbox::Key::CtrlY      then 'y'
+    when LibTermbox::Key::CtrlZ      then 'z'
+    when LibTermbox::Key::Ctrl3      then '3'
+    when LibTermbox::Key::Ctrl4      then '4'
+    when LibTermbox::Key::Ctrl5      then '5'
+    when LibTermbox::Key::Ctrl6      then '6'
+    when LibTermbox::Key::Ctrl7      then '7'
+    when LibTermbox::Key::Ctrl8      then '8'
+    when LibTermbox::Key::CtrlTilde  then '`'
+    when LibTermbox::Key::CtrlLeftSquareBracket then '['
+    when LibTermbox::Key::CtrlRightSquareBracket then ']'
+    when LibTermbox::Key::CtrlBackslash then '\\'
+    when LibTermbox::Key::CtrlSlash then '/'
+    when LibTermbox::Key::CtrlUnderscore then '_'
+    else nil
     end
-    out_event
   end
+
+  private def map_key_mod(k : LibTermbox::Key?) : Symbol?
+    case k
+    when LibTermbox::Key::ArrowUp    then nil
+    when LibTermbox::Key::ArrowDown  then nil
+    when LibTermbox::Key::ArrowLeft  then nil
+    when LibTermbox::Key::ArrowRight then nil
+    when LibTermbox::Key::Home       then nil
+    when LibTermbox::Key::End        then nil
+    when LibTermbox::Key::PageUp     then nil
+    when LibTermbox::Key::PageDown   then nil
+    when LibTermbox::Key::Insert     then nil
+    when LibTermbox::Key::Delete     then nil
+    when LibTermbox::Key::Backspace,
+         LibTermbox::Key::Backspace2 then nil
+    when LibTermbox::Key::Enter      then nil
+    when LibTermbox::Key::Space      then nil
+    when LibTermbox::Key::Tab        then nil
+    when LibTermbox::Key::F1         then nil
+    when LibTermbox::Key::F2         then nil
+    when LibTermbox::Key::F3         then nil
+    when LibTermbox::Key::F4         then nil
+    when LibTermbox::Key::F5         then nil
+    when LibTermbox::Key::F6         then nil
+    when LibTermbox::Key::F7         then nil
+    when LibTermbox::Key::F8         then nil
+    when LibTermbox::Key::F9         then nil
+    when LibTermbox::Key::F10        then nil
+    when LibTermbox::Key::F11        then nil
+    when LibTermbox::Key::F12        then nil
+    when LibTermbox::Key::Escape     then nil
+    when LibTermbox::Key::CtrlA      then :ctrl
+    when LibTermbox::Key::CtrlB      then :ctrl
+    when LibTermbox::Key::CtrlC      then :ctrl
+    when LibTermbox::Key::CtrlD      then :ctrl
+    when LibTermbox::Key::CtrlE      then :ctrl
+    when LibTermbox::Key::CtrlF      then :ctrl
+    when LibTermbox::Key::CtrlG      then :ctrl
+    when LibTermbox::Key::CtrlH      then :ctrl
+    when LibTermbox::Key::CtrlI      then :ctrl
+    when LibTermbox::Key::CtrlJ      then :ctrl
+    when LibTermbox::Key::CtrlK      then :ctrl
+    when LibTermbox::Key::CtrlL      then :ctrl
+    when LibTermbox::Key::CtrlM      then :ctrl
+    when LibTermbox::Key::CtrlN      then :ctrl
+    when LibTermbox::Key::CtrlO      then :ctrl
+    when LibTermbox::Key::CtrlP      then :ctrl
+    when LibTermbox::Key::CtrlQ      then :ctrl
+    when LibTermbox::Key::CtrlR      then :ctrl
+    when LibTermbox::Key::CtrlS      then :ctrl
+    when LibTermbox::Key::CtrlT      then :ctrl
+    when LibTermbox::Key::CtrlU      then :ctrl
+    when LibTermbox::Key::CtrlV      then :ctrl
+    when LibTermbox::Key::CtrlW      then :ctrl
+    when LibTermbox::Key::CtrlX      then :ctrl
+    when LibTermbox::Key::CtrlY      then :ctrl
+    when LibTermbox::Key::CtrlZ      then :ctrl
+    when LibTermbox::Key::Ctrl3      then :ctrl
+    when LibTermbox::Key::Ctrl4      then :ctrl
+    when LibTermbox::Key::Ctrl5      then :ctrl
+    when LibTermbox::Key::Ctrl6      then :ctrl
+    when LibTermbox::Key::Ctrl7      then :ctrl
+    when LibTermbox::Key::Ctrl8      then :ctrl
+    when LibTermbox::Key::CtrlTilde  then :ctrl
+    when LibTermbox::Key::CtrlLeftSquareBracket then :ctrl
+    when LibTermbox::Key::CtrlRightSquareBracket then :ctrl
+    when LibTermbox::Key::CtrlBackslash then :ctrl
+    when LibTermbox::Key::CtrlSlash then :ctrl
+    when LibTermbox::Key::CtrlUnderscore then :ctrl
+    else nil
+    end
+  end
+
 
   @mouse_press : TUI::MouseStatus?
 
