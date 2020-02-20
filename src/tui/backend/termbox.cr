@@ -1,12 +1,9 @@
 require "lib_termbox"
 
 class TUI::Backend::Termbox < TUI::Backend
-  def initialize
-    create_input_channel
-  end
-
   def start : self
     raise "TUI Backend already active" if @started
+    create_input_channel
     case LibTermbox.init
     when -1 then raise "Termbox error: unsupported terminal"
     when -2 then raise "Termbox error: failed to open TTY"
@@ -62,7 +59,11 @@ class TUI::Backend::Termbox < TUI::Backend
   end
 
   private def create_input_channel
+    @channel = Channel(TUI::Event).new if @channel.closed?
     spawn do
+      until @started
+        Fiber.yield
+      end
       until @channel.closed?
         event_type = LibTermbox.poll_event(out event)
         next if event_type <= 0 # Ignore error events
@@ -133,7 +134,9 @@ class TUI::Backend::Termbox < TUI::Backend
     when LibTermbox::Key::MouseRelease
       @mouse_press = nil
       return nil
-    else nil
+    else
+      TUI.logger.info "Unhandled Termbox mouse: #{i}, #{LibTermbox::Key.new(i)}"
+        nil
     end
     @mouse_press ? nil : (@mouse_press = out)
   end

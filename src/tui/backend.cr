@@ -5,7 +5,12 @@ abstract class TUI::Backend
 
   getter started = false
   
-  @channel = Channel(TUI::Event).new
+  @channel : Channel(TUI::Event)
+  @prev_paint : Array(Array(Cell))? = nil
+
+  def initialize
+    @channel = Channel(TUI::Event).new
+  end
 
   abstract def start : self
 
@@ -26,12 +31,18 @@ abstract class TUI::Backend
   end
 
   def paint(painter : TUI::Painter)
-    painter.h.times do |h|
-      painter.w.times do |w|
-        draw(painter[w, h], w, h)
+    #drawn = painter.diff(@prev_paint) do |c, x, y|
+    #  draw(c, x, y)
+    #end
+    #unless drawn
+      painter.h.times do |h|
+        painter.w.times do |w|
+          draw(painter[w, h], w, h)
+        end
       end
-    end
+    #end
     refresh
+    @prev_paint = painter.surface.dup
   end
 
   # XTerm compatible

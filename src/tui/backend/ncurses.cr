@@ -4,18 +4,15 @@ class TUI::Backend::NCurses < TUI::Backend
   ERR = -1
   OK = 0
 
-  def initialize
-    create_input_channel
-  end
-
   def start : self
     raise "TUI Backend already active" if @started
+    create_input_channel
     ::NCurses.start
     ::NCurses.no_echo
     ::NCurses.set_cursor ::NCurses::Cursor::Invisible
     ::NCurses.keypad true
     ::NCurses.mouse_mask(::NCurses::Mouse::All | ::NCurses::Mouse::Position)
-    puts "\033[?1003h"
+    puts "\033[?1003h" # Mouse position
     ::NCurses.stdscr.timeout = -1
     @started = true
     self
@@ -24,6 +21,7 @@ class TUI::Backend::NCurses < TUI::Backend
   def stop : self
     raise "TUI Backend not active" unless @started
     puts "\033[?1003l"
+    @channel.close
     ::NCurses.end
     @started = false
     self
@@ -65,8 +63,12 @@ class TUI::Backend::NCurses < TUI::Backend
     end
   end
 
-  private def create_input_channel
+  private def create_input_channel : Channel(TUI::Event)
+    @channel = Channel(TUI::Event).new if @channel.closed?
     spawn do
+      until @started
+        Fiber.yield
+      end
       until @channel.closed?
         ev = parse_event(::NCurses.get_char)
         next unless ev
@@ -74,6 +76,7 @@ class TUI::Backend::NCurses < TUI::Backend
         Fiber.yield # Prevents buffering when running on a single thread
       end
     end
+    @channel
   end
 
   private def map_key(event : ::NCurses::Key | Char) : TUI::Event::Key?
