@@ -28,11 +28,14 @@ class Input < TUI::Widget
 
   def paint(painter : TUI::Painter)
     painter.centre(painter.w//2, 0, "Use the mouse or press a key")
-    painter.centre(painter.w//2, painter.h//2, case i = @prev_input
-    when TUI::Event::Mouse then "Mouse event: #{i.mouse} #{i.position}"
-    when TUI::Event::Key then "Key event: #{i.key}"
-    else "~~~~~~~"
-    end)
+    painter.centre(
+      painter.w//2,
+      painter.h//2,
+      case i = @prev_input
+      when TUI::Event::Mouse then "Mouse event: #{i.mouse} #{i.position}"
+      when TUI::Event::Key then "Key event: #{i.key}"
+      else "~~~~~~~"
+      end)
     painter.centre(painter.w//2, painter.h-1, "Press q to exit example")
     true
   end
