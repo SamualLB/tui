@@ -35,9 +35,11 @@ class MenuTest < TUI::Widget::Main
     super
     top_menu = TUI::Widget::Menu.new(self)
     stack = TUI::Widget::Stacked.new(self)
-    TUI::Widget::Button.new(top_menu, "11111") { stack.index = 0 }
+    b1 = TUI::Widget::Button.new(top_menu, "11111") { stack.index = 0 }
+    b1.border = TUI::Border::Squared.new
     TUI::Widget::Button.new(top_menu, "2222") { stack.index = 1 }
-    TUI::Widget::Button.new(top_menu, "333") { stack.index = 2 }
+    b3 = TUI::Widget::Button.new(top_menu, "333") { stack.index = 2 }
+    b3.border = TUI::Border::Rounded.new
     self.top = top_menu
     Widget1.new(stack)
     Widget2.new(stack)

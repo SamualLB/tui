@@ -4,8 +4,13 @@ class TUI::Layout::Menu < TUI::Layout
     def set(event, rect)
       return if @items.empty?
       offset = 0
+      max_height = 1
       @items.each do |item|
-        item.rect = Rect.new(offset, 0, item.width, 1)
+        i_height = item.height
+        max_height = i_height if i_height && i_height > max_height
+      end
+      @items.each do |item|
+        item.rect = Rect.new(offset, 0, item.width, max_height)
         item.handle(event)
         offset += item.w + 1
       end

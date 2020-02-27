@@ -15,4 +15,13 @@ class TUI::Widget::Menu < TUI::Widget
     end
     @layout = l
   end
+
+  def height
+    max = 1
+    layout.@items.each do |item|
+      i_height = item.height
+      max = i_height if i_height && i_height > max
+    end
+    max
+  end
 end

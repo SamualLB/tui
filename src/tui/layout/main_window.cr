@@ -8,18 +8,22 @@ class TUI::Layout::MainWindow < TUI::Layout
 
   def set(event, rect)
     leftover_h = rect.h
+    top_h = 0
     @top_menu.try do |t|
-      t.rect = Rect.new(0, 0, rect.w, 1)
-      leftover_h -= 1
+      menu_height = t.height(rect.w) || 1
+      t.rect = Rect.new(0, 0, rect.w, menu_height)
+      leftover_h -= menu_height
+      top_h = menu_height
       t.handle(event)
     end
     @bottom_menu.try do |b|
-      b.rect = Rect.new(0, rect.h-1, rect.w, 1)
-      leftover_h -= 1
+      menu_height = b.height(rect.w) || 1
+      b.rect = Rect.new(0, rect.h-menu_height, rect.w, menu_height)
+      leftover_h -= menu_height
       b.handle(event)
     end
     @main_widget.try do |m|
-      m.rect = Rect.new(0, @top_menu ? 1 : 0, rect.w, leftover_h)
+      m.rect = Rect.new(0, top_h, rect.w, leftover_h)
       m.handle(event)
     end
   end

@@ -11,7 +11,11 @@ class TUI::Widget::MenuItem < TUI::Widget
   end
 
   def width : Int32
-    (l = label) ? l.width : 0
+    (l = label) ? l.width + ((b = @border) ? b.width || 0 : 0) : 0
+  end
+
+  def height
+    (b = @border) ? b.height + (label ? 1 : 0) : (label ? 1 : 0)
   end
 
   def to_s(io : IO)

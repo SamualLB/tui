@@ -191,6 +191,22 @@ abstract class TUI::Widget
     end
   end
 
+  def width : Int32?
+    nil
+  end
+
+  def height : Int32?
+    nil
+  end
+
+  def width(h : Int32) : Int32?
+    width
+  end
+
+  def height(w : Int32) : Int32?
+    height
+  end
+
   def dump_tree_rect(io : IO, e : Event::Mouse, far = 0)
     io << '\n'
     io << " "*far
