@@ -9,14 +9,13 @@ crystal: 0.27.2
 dependencies:
   ncurses:
     github: SamualLB/ncurses
-
+  char_width:
+    github: SamualLB/char_width
 
 development_dependencies:
   ncurses:
     github: SamualLB/ncurses
   lib_termbox:
     github: SamualLB/lib_termbox
-  char_width:
-    github: SamualLB/char_width
 
 license: MIT
