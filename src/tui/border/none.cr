@@ -4,19 +4,19 @@ struct TUI::Border::None < TUI::Border
     nil
   end
 
-  def width
+  def width : Int32
     0
   end
 
-  def height
+  def height : Int32
     0
   end
 
-  def width(h)
+  def width(h) : Int32
     0
   end
 
-  def height(w)
+  def height(w) : Int32
     0
   end
 end

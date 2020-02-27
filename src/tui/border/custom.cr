@@ -9,19 +9,19 @@ struct TUI::Border::Custom < TUI::Border
     @proc.call(painter)
   end
 
-  def width
+  def width : Int32
     @c_w
   end
 
-  def height
+  def height : Int32
     @c_h
   end
 
-  def width(w)
+  def width(w) : Int32
     @c_w
   end
 
-  def height(w)
+  def height(w) : Int32
     @c_h
   end
 end

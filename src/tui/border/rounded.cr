@@ -12,19 +12,19 @@ struct TUI::Border::Rounded < TUI::Border
     painter.push(1, 1, Math.max(0, painter.w-2), Math.max(0, painter.h-2))
   end
 
-  def width
+  def width : Int32
     2
   end
 
-  def height
+  def height : Int32
     2
   end
 
-  def width(h)
+  def width(h) : Int32
     2
   end
 
-  def height(w)
+  def height(w) : Int32
     2
   end
 end
