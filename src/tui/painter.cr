@@ -164,6 +164,10 @@ class TUI::Painter
     self[mid-str.width//2, j] = str
   end
 
+  def centre(j, str)
+    centre(w//2, j, str)
+  end
+
   def to_s(io : IO)
     io << "Current rect: #{@current_rect}. "
     io << "Stack: " << @stack

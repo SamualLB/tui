@@ -69,6 +69,66 @@ describe TUI::Painter do
     end
   end
 
+  describe "#[]=" do
+    it "can change a cell" do
+      p = TUI::Painter.new(10, 8)
+      p[0, 0] = TUI::Cell.new('T')
+      p[0, 0].should eq TUI::Cell.new('T')
+      p[9, 7] = TUI::Cell.new('S')
+      p[9, 7].should eq TUI::Cell.new('S')
+    end
+
+    it "can change a cell to a character" do
+      p = TUI::Painter.new(10, 8)
+      p[0, 0] = 'T'
+      p[0, 0].should eq TUI::Cell.new('T')
+      p[9, 7] = 'S'
+      p[9, 7].should eq TUI::Cell.new('S')
+    end
+
+    it "can add a String" do
+      p = TUI::Painter.new(10, 8)
+      p[0, 0] = "Hi"
+      p[0, 0].should eq TUI::Cell.new('H')
+      p[1, 0].should eq TUI::Cell.new('i')
+    end
+
+    it "can add a wrapping String" do
+      p = TUI::Painter.new(10, 8)
+      p[0, 0, 4] = "Hello"
+      p[0, 0].should eq TUI::Cell.new('H')
+      p[0, 1].should eq TUI::Cell.new('o')
+
+      p2 = TUI::Painter.new(4, 4)
+      p2[0, 0] = "Hello"
+      p2[0, 0].should eq TUI::Cell.new('H')
+      p2[0, 1].should eq TUI::Cell.new('o')
+    end
+  end
+
+  describe "#centre" do
+    it "can add centred text" do
+      p = TUI::Painter.new(10, 4)
+      p.centre(p.w//2, 0, "Test")
+      p[3, 0].should eq TUI::Cell.new('T')
+      p[6, 0].should eq TUI::Cell.new('t')
+    end
+
+    it "drifts left" do
+      p = TUI::Painter.new(7, 4)
+      p.centre(p.w//2, 0, "Hello")
+      p[1, 0].should eq TUI::Cell.new('H')
+      p[5, 0].should eq TUI::Cell.new('o')
+    end
+
+    it "defaults to the horizontal centre" do
+      p = TUI::Painter.new(10, 4)
+      p.centre(0, "Test")
+      p[3, 0].should eq TUI::Cell.new('T')
+      p[6, 0].should eq TUI::Cell.new('t')
+    end
+  end
+
   describe "#each" do
     it "yields the correct amount of times" do
       count = 0
@@ -119,6 +179,49 @@ describe TUI::Painter do
       painter[0, 0].should eq TUI::Cell.new('P')
       painter.clear
       painter[0, 0].should eq TUI::Cell.new
+    end
+
+    it "clears all cells in a rect" do
+      p = TUI::Painter.new(10, 8)
+      p[0, 0] = '1'
+      p[4, 3] = '2'
+      p.clear(TUI::Rect.new(2, 2, 4, 2))
+      p[0, 0].should eq TUI::Cell.new('1')
+      p[4, 3].should eq TUI::Cell.new
+    end
+  end
+
+  describe "#resize" do
+    it "can shrink" do
+      p = TUI::Painter.new(10, 8)
+      p.w.should eq 10
+      p.h.should eq 8
+      p.resize(8, 6)
+      p.w.should eq 8
+      p.h.should eq 6
+    end
+
+    it "can grow" do
+      p = TUI::Painter.new(10, 8)
+      p.w.should eq 10
+      p.h.should eq 8
+      p.resize(12, 10)
+      p.w.should eq 12
+      p.h.should eq 10
+    end
+
+    it "clears the surface" do
+      p = TUI::Painter.new(10, 8)
+      p[0, 0] = 'T'
+      p[0, 0].should eq TUI::Cell.new('T')
+      p.resize(12, 8)
+      p[0, 0].should eq TUI::Cell.new
+
+      p2 = TUI::Painter.new(10, 8)
+      p2[0, 0] = 'T'
+      p2[0, 0].should eq TUI::Cell.new('T')
+      p2.resize(8, 6)
+      p2[0, 0].should eq TUI::Cell.new
     end
   end
 
