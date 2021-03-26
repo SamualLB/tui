@@ -20,7 +20,7 @@ class TUI::Widget::MenuItem < TUI::Widget
 
   def to_s(io : IO)
     io << "#<" << self.class.name << ":0x"
-    object_id.to_s(16, io)
+    object_id.to_s(io, 16)
     io << " \"" << label << "\"" << '>'
   end
 end
